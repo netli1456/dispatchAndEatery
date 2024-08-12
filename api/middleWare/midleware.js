@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
 import geoip from 'geoip-lite';
 import DeviceDetector from 'device-detector-js';
-import { checkIfCurrentDeviceMatchAnyInDb } from '../utils/utils.js';
 import Device from '../models/deviceLog.js';
 import User from '../models/user.js';
+import { checkIfCurrentDeviceMatchAnyInDb } from '../ultils/ultils.js';
+
 
 export const deviceCheck = (req) => {
   const detector = new DeviceDetector();
