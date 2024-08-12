@@ -1,0 +1,25 @@
+.cardImage {
+    width: 200px ;
+    height: 100px;
+    
+}
+.cardImage img{
+    width: 100%;
+    height: 100px;
+   
+
+}
+
+.imageCardParent{
+    border:1px solid grey;
+    border-radius: 10px;
+}
+
+
+.acct{
+    transition: ease-in-out !important;
+    transition-duration: 5ms !important;
+    transition-delay: 5ms !important;
+    transition-property: all !important;
+    transform: rotateX('angle');
+}

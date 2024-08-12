@@ -1,0 +1,63 @@
+.font {
+  font-size: 16px;
+}
+.font1 {
+  font-size: 16px;
+ 
+}
+.font1bg{    background-color:lightgrey
+  !important;}
+
+.list img {
+  width: 100%;
+}
+
+.bord {
+  border-left: 1px solid grey;
+}
+
+.botn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
+}
+.botn1 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: fit-content !important;
+  height: 30px !important;
+  border-radius: 10px !important;
+}
+
+.box1 {
+  width: 10%;
+  font-weight: 700;
+}
+.box2 {
+  width: 30%;
+  font-weight: 700;
+}
+.box3 {
+  width: 20%;
+  font-weight: 700;
+}
+.box4 {
+  width: 20%;
+  font-weight: 700;
+}
+.box5 {
+  width: 20%;
+  font-weight: 700;
+}
+.box6 {
+  width: 20%;
+}
+
+
+.errors{
+  background-color: rgba(239, 59, 59, 0.618);
+}

@@ -1,0 +1,144 @@
+.box {
+  width: 300px !important;
+}
+
+.box img {
+  width: 100% !important;
+  min-height: 60% !important;
+  max-height: 60% !important;
+  object-fit: cover !important;
+}
+
+
+
+.rowParent2 {
+  width: 100%;
+  margin: auto;
+  background-color: rgba(245, 238, 238, 0.789);
+}
+
+.rowfirstcol {
+  height: 98%;
+  align-items: center;
+}
+.rowfirstcol ul {
+  border-left: 1px green solid;
+  list-style-type: none;
+}
+
+.rowfirstcol ul li::before {
+  content: '\2022';
+  color: green;
+  margin-right: 8px;
+}
+
+.suggetWidth {
+  width: fit-content;
+ 
+}
+
+.icons {
+  position: absolute;
+  width:100%;
+  top: 30%;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.locationBg{
+  background-color: rgba(0, 0, 0, 0.338) !important;
+  
+}
+
+.bgt{ background-color: rgba(245, 238, 238, 0.789) !important;}
+
+
+
+
+
+
+/* Global styles */
+body {
+  background-color: #f0f0f0; /* Light grey background */
+}
+
+.category-container {
+ 
+ 
+ margin:auto;
+  background-color: #f0f0f0; 
+}
+
+
+.category-item {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top:17px;
+  text-decoration:none;
+  width: 120px; /* Adjust as needed */
+  height: 120px; /* Adjust as needed */
+ 
+ 
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
+  background-image: url('data:image/svg+xml,%3Csvg width="100" height="" viewBox="0 0 90 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M90 5 Q65 20, 60 5 Q95 20, 80 40 Q95 60, 80 75 Q65 90, 50 75 Q35 90, 20 75 Q5 60, 10 40 Q5 20, 20 5 Q35 20, 50 5 Z" fill="%238BC34A" stroke="%232E7D32" stroke-width="2"/%3E%3C/svg%3E');
+  background-size: cover;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s;
+  text-shadow: 
+    -1px -1px 0 #2E7D32,  
+    1px -1px 0 #2E7D32,
+    -1px 1px 0 #2E7D32,
+    1px 1px 0 #2E7D32; /* Green outline */
+
+}
+ .bt{
+  background-color: inherit;
+ }
+
+
+/* Hover effect */
+.category-item:hover {
+  transform: scale(1.1);
+}
+
+/* Icon styling */
+.category-icon {
+  font-size: 24px; /* Adjust as needed */
+ color:white;
+  
+}
+
+/* Center item styling */
+.center-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Flex layout for larger screens */
+@media (min-width: 768px) {
+  .category-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 1000px; 
+    height: auto;
+  }
+
+  .category-item {
+    position: static;
+    margin:10px ; 
+  }
+
+  .center-item {
+    position: static;
+    margin: 10px; 
+  }
+}
+.ll{place-items: center;}

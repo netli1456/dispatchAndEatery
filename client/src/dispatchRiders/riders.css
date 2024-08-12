@@ -1,0 +1,24 @@
+.imageRide {
+  width: 200px;
+  height: 200px;
+}
+
+.imageRide img {
+  width: 100%;
+  border-radius: 50%;
+  border: 1px solid grey;
+}
+.imageReview {
+  width: 30px;
+  height: 30px;
+}
+
+.imageReview img {
+  width: 100%;
+  border-radius: 50%;
+  border: 1px solid grey;
+}
+
+.borderS {
+  border: none;
+}

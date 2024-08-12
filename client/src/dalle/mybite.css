@@ -1,0 +1,177 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: lightgray;
+  padding: 10px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.input1 {
+  width: 50%;
+  height: 30px;
+  border: none;
+  border-radius: 15px;
+  padding: 5px 10px;
+}
+.input2 {
+  width: 98%;
+  margin: auto;
+  height: 35px;
+  border: none;
+  border-radius: 15px;
+  padding: 5px 10px;
+}
+
+.search-results {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: px;
+  background-color: lightgray;
+}
+.search-results1 {
+  border-radius: 5px;
+  background-color: lightgray;
+  width: fit-content;
+}
+
+.listings {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.listing {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.listing-image {
+  width: 100px;
+  height: 100px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+
+
+.listing-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.listing-info h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.navigation-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  background-color: lightgray;
+}
+
+.button1 {
+  width: 100px;
+  height: 30px;
+  border: none;
+  border-radius: 15px;
+  background-color: orange;
+  color: white;
+  font-size: 16px;
+}
+
+.greyish {
+  background-color: lightgray;
+}
+
+.hovering:hover{
+  background-color: lightgray !important;
+  cursor: pointer !important;
+ 
+  
+}
+
+.active{
+  background-color: lightgray !important;
+  cursor: pointer !important;
+  border-bottom: 5px solid green !important;
+  
+}
+
+
+
+
+
+.kitchenHover {
+  transition: transform 0.3s ease;
+}
+
+.kitchenHover:hover {
+  transform: scale(1.02);
+}
+
+.kitchenHover .listing {
+  transition: transform 0.3s ease;
+}
+
+.kitchenHover:hover .listing {
+  transform: scale(1.03);
+}
+
+.location{
+  background: white;
+  height: 100%;
+}
+
+
+.input-no-border {
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 2px solid #ccc !important; /* You can customize the bottom border color and thickness */
+  border-radius: 0 !important; /* To make sure there is no border radius */
+  box-shadow: none !important; /* To remove any default box shadow */
+}
+
+.input-group-no-border {
+  border: none !important;
+}
+
+
+
+.scrollable-column {
+  max-height: 80vh; 
+  overflow-y: auto;
+  position:sticky;
+  top:120
+}
+
+.scrollable-column::-webkit-scrollbar {
+  width: 1px;
+}
+
+.scrollable-column::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.scrollable-column::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
