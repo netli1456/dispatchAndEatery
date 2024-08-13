@@ -1,5 +1,5 @@
 import TransactionHistory from '../models/TransactionHistory.js';
-import User from '../models/User.js';
+import User from '../models/userModel.js';
 
 export const getTransactions = async (req, res) => {
   try {
@@ -18,20 +18,26 @@ export const getTransactions = async (req, res) => {
 
     for (const transaction of transactions) {
       const buyer = await User.findById(transaction.buyerId.toString());
-      const business = await User.findById(transaction.businessId.toString());
+      const business = await User.findById(
+        transaction.businessId.toString()
+      );
+    
+
 
       const details = {
-        buyerId: transaction.buyerId,
+        buyerId:  transaction.buyerId,
         businessId: transaction.businessId,
         amount: transaction.amount,
         status: transaction.status,
         orderId: transaction.orderId,
         createdAt: transaction.createdAt,
-        buyerName: buyer.firstname,
-        businessName: business.businessName,
+        buyerName: buyer ?  buyer.firstname : 'A_user',
+        businessName: business ? business.businessName : 'A_user',
       };
       history.push(details);
     }
+
+
 
     if (history.length !== 0) {
       return res.status(200).json(history);

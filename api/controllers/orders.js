@@ -1,6 +1,6 @@
 import Order from '../models/Order.js';
 import TransactionHistory from '../models/TransactionHistory.js';
-import User from '../models/user.js';
+import User from '../models/userModel.js';
 
 export const CreateOrder = async (req, res) => {
   try {
@@ -122,7 +122,6 @@ export const orderedItems = async (req, res) => {
               category: items.category,
               quantity: items.quantity,
               productId: items.productId,
-            
             };
           });
 
@@ -134,7 +133,7 @@ export const orderedItems = async (req, res) => {
             isPaid: item.isPaid,
             isDispatched: item.isDispatched,
             isRefunded: item.isRefunded,
-            isCancelled: item.isCancelled
+            isCancelled: item.isCancelled,
           };
           orders.push(items);
         }
@@ -205,11 +204,11 @@ export const getSingleOrder = async (req, res) => {
       const { orderedItems, ...other } = order._doc;
       const buyer = await User.findById(order.buyerId);
       if (!buyer) {
-      return  res.status(404).json({ message: 'user not found' });
+        return res.status(404).json({ message: 'user not found' });
       }
       const business = await User.findById(order.businessId);
       if (!business) {
-       return res.status(404).json({ message: 'user not found' });
+        return res.status(404).json({ message: 'user not found' });
       }
       const others = {
         ...other,
@@ -297,46 +296,3 @@ export const refundAndCancelOrder = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
-
-// export const searchOrder = async (req, res) => {
-//   try {
-//     const { query } = req.query;
-//     const { id } = req.params;
-
-//     const orders = [];
-//     const isBusinessId = await User.findById(id);
-
-//     const order = await Order.find(
-//       {
-//         businessId: id,
-//         isTaken: '',
-//       },
-
-//     );
-
-//     if (order.length !== 0) {
-//       for (const item of order) {
-//         const singleItem = item(orderedItems).
-//         map((items) => {
-//           return {
-//             name: items.name,
-//             category: items.category,
-//             quantity: items.quantity,
-//             productId: items.productId,
-//           };
-//         });
-
-//         const items = {
-//           content: singleItem,
-//           imgs: item.orderedItems[0].imgs[0],
-//           _id: item._id,
-//         };
-//         orders.push(items);
-//       }
-//     }
-
-//     res.status(200).json(order)
-//   } catch (error) {
-//     res.status(404).json({ message: error.message });
-//   }
-// };

@@ -1,22 +1,8 @@
 import express from 'express';
-import {
-  Riders,
-  getRiderAndReviews,
-  getStores,
-  getUserAccount,
-  getUserReviews,
-  gettingKitchenByLocation,
-  passwordChange,
-  resendOtp,
-  setPassword,
-  userBalance,
-  userLogin,
-  userRegister,
-  verifyOtp,
-} from '../controllers/users.js';
-import { authMiddleware } from '../middleWare/midleware.js';
-// import { getTransactions } from '../controllers/transactionHistory.js';
-// import { inserLoclToOnline } from '../controllers/migration.js';
+
+import { getRiderAndReviews, getStores, gettingKitchenByLocation, getUserAccount, getUserReviews, passwordChange, resendOtp, Riders, setPassword, userBalance, userLogin, userRegister, verifyOtp } from '../controllers/usersController.js';
+import { authMiddleware } from '../middleWareAuth/midleware.js';
+
 
 const userRouter = express.Router();
 
@@ -31,7 +17,6 @@ userRouter.get('/acct/:id', userBalance);
 userRouter.get('/location', gettingKitchenByLocation);
 userRouter.get('/stores', getStores);
 
-// userRouter.post('/insert', insertFromLocalToOnline)
 
 userRouter.post('/verification', verifyOtp);
 userRouter.post('/resendOtp', resendOtp);

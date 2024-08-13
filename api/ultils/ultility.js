@@ -1,10 +1,10 @@
-import { deviceCheck } from '../middleWare/midleware.js';
+import { deviceCheck } from '../middleWareAuth/midleware.js';
 import Device from '../models/deviceLog.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { sendVerificationEmail } from './emailSmsHtml.js';
-import User from '../models/user.js';
 import ResetPassword from '../models/PasswordReset.js';
+import User from '../models/userModel.js';
 
 export const checkingLoggedInDevices = async ({
   user,
@@ -14,7 +14,7 @@ export const checkingLoggedInDevices = async ({
   text,
   subject,
   warning,
-  res
+  res,
 }) => {
   const devices = deviceCheck(req);
   const loggedIndevices = await Device.findOne({
@@ -140,8 +140,6 @@ export const findDeviceByUserId = async ({ req, user, res }) => {
     return res.status(404).json({ message: 'User not found' });
   }
 
- 
-
   const sentResetOtp = await ResetPassword.findOne({
     userId: newLoginUser._id.toString(),
     fingerprint: req.body.fingerprint,
@@ -163,16 +161,15 @@ export const findDeviceByUserId = async ({ req, user, res }) => {
   const newloginDetails = await Device.findOne({
     userId: newLoginUser._id.toString(),
   });
-  console.log(newloginDetails)
 
   if (!newloginDetails) {
     const creation = `password reset login on the ${Date.now()}`;
-     await checkingLoggedInDevices({
-      user:newLoginUser,
+    await checkingLoggedInDevices({
+      user: newLoginUser,
       fingerprints: req.body.fingerprint,
       req,
       creation,
-      res
+      res,
     });
   }
   await sentResetOtp.save();

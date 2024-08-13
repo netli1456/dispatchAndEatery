@@ -14,9 +14,7 @@ function AcctHistory(props) {
         <Box sx={{ pt: 0.5 }}>
           <Skeleton width="40%" height={50} />
           <Skeleton width={200} height={50} />
-          {/* <Skeleton width={300} height={50} />
-          <Skeleton width={300} height={50} />
-          <Skeleton width={300} height={50} /> */}
+  
         </Box>
       ) : (
         <>

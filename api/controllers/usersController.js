@@ -2,25 +2,26 @@ import bcrypt from 'bcryptjs';
 import Product from '../models/Product.js';
 import Review from '../models/Review.js';
 import Account from '../models/accounts.js';
-import User from '../models/user.js';
 
-import { deviceCheck } from '../middleWare/midleware.js';
+import { deviceCheck } from '../middleWareAuth/midleware.js';
 import {
   checkIfCurrentDeviceMatchAnyInDb,
   checkingLoggedInDevices,
   checkOtpexpiration,
   findDeviceByUserId,
   sendToken,
-} from '../ultils/ultils.js';
+} from '../ultils/ultility.js';
 import Device from '../models/deviceLog.js';
 import { emailText } from '../ultils/emailBody.js';
 import { sendVerificationEmail } from '../ultils/emailSmsHtml.js';
 import ResetPassword from '../models/PasswordReset.js';
+import User from '../models/userModel.js';
 
 export const userRegister = async (req, res) => {
   const saltRounds = 10;
 
   try {
+    
     let user = {};
     const device = deviceCheck(req);
     const emailMessage = emailText(device);
@@ -31,12 +32,13 @@ export const userRegister = async (req, res) => {
       if (userExist.otpIsVerified) {
         return res.status(402).json({ message: 'email has already been used' });
       } else {
+
         userExist.otp = await sendVerificationEmail({
           user: userExist,
           text: emailMessage.newUserText,
           subject: emailMessage.newUserSubject,
           warning: emailMessage.newUserWarning,
-          res
+          res,
         });
         user = userExist;
       }
@@ -48,7 +50,7 @@ export const userRegister = async (req, res) => {
         text: emailMessage.newUserText,
         subject: emailMessage.newUserSubject,
         warning: emailMessage.newUserWarning,
-        res
+        res,
       });
       user = newUser;
     }
@@ -61,7 +63,7 @@ export const userRegister = async (req, res) => {
       req,
       user,
       creation,
-      res
+      res,
     });
 
     const userData = {
@@ -82,7 +84,7 @@ export const userRegister = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
   const { otpCode, resetPasswordOtp } = req.body;
-  try {  
+  try {
     let user = {};
 
     if (resetPasswordOtp) {
@@ -211,7 +213,7 @@ export const resendOtp = async (req, res) => {
         text: emailMessage.newUserText,
         subject: emailMessage.newUserSubject,
         warning: emailMessage.newUserWarning,
-        res
+        res,
       });
       user.otpCreatedAt = Date.now();
       await user.save();
@@ -221,7 +223,7 @@ export const resendOtp = async (req, res) => {
         text: emailMessage.newLoginText,
         subject: emailMessage.newLoginSubject,
         warning: emailMessage.newLoginWarning,
-        res
+        res,
       });
       verifyDevice.otpCreatedAt = Date.now();
       await newloginDetails.save();
@@ -232,8 +234,6 @@ export const resendOtp = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 export const userLogin = async (req, res) => {
   try {
@@ -271,7 +271,7 @@ export const userLogin = async (req, res) => {
         text: emailMessage.newUserText,
         subject: emailMessage.newUserSubject,
         warning: emailMessage.newUserWarning,
-        res
+        res,
       });
       await user.save();
 
@@ -283,7 +283,7 @@ export const userLogin = async (req, res) => {
         text: emailMessage.newLoginText,
         subject: emailMessage.newLoginSubject,
         warning: emailMessage.newLoginWarning,
-        res
+        res,
       });
 
       return res.status(200).json({ user: userDetails });
@@ -296,7 +296,7 @@ export const userLogin = async (req, res) => {
       text: emailMessage.newLoginText,
       subject: emailMessage.newLoginSubject,
       warning: emailMessage.newLoginWarning,
-      res
+      res,
     });
 
     if (otpIsRequired) {
@@ -336,7 +336,7 @@ export const passwordChange = async (req, res) => {
       text: emailMessage.passwordChangeText,
       subject: emailMessage.passwordChangeSubject,
       warning: emailMessage.passwordChangeWarning,
-      res
+      res,
     });
     newPasswordOtp.otp = hasOtp;
     await newPasswordOtp.save();
@@ -360,12 +360,10 @@ export const passwordChange = async (req, res) => {
 
 export const setPassword = async (req, res) => {
   try {
-    console.log(req.body)
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    console.log(user);
     const newloginDetails = await Device.findOne({
       userId: user._id.toString(),
     });
@@ -569,9 +567,9 @@ export const gettingKitchenByLocation = async (req, res) => {
         ],
       });
 
-     return RegisteredKitchens
+      return RegisteredKitchens
         ? res.status(200).json('store exist')
-        :  res
+        : res
             .status(200)
             .json('Sorry, we do not have stores in this location yet');
     } else {
@@ -688,5 +686,3 @@ export const getStores = async (req, res) => {
     res.status(500).json({ message: 'something went wrong' });
   }
 };
-
-

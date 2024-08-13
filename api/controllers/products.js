@@ -1,5 +1,5 @@
 import Product from '../models/Product.js';
-import User from '../models/User.js';
+import User from '../models/userModel.js';
 
 export const postProduct = async (req, res) => {
   try {
@@ -140,7 +140,6 @@ export const kitchenItems = async (req, res) => {
       $match: { _id: { $nin: Array.from(fetchKitchenProducts) } },
     });
 
-
     const products = await Product.aggregate(aggregationPipeline);
     const user = await User.findById(userId);
 
@@ -167,18 +166,20 @@ export const kitchenCat = async (req, res) => {
 
 export const relatedProducts = async (req, res) => {
   try {
-    
-    const cartItems = req.body.cartItems
-    const product = req.body.product
-    const query  = product.type > 2 ? product.type.slice(0,3) : product.type || cartItems.map(item=> item.type > 4 ? item.type.slice(0,3) : item.type);
+    const cartItems = req.body.cartItems;
+    const product = req.body.product;
+    const query =
+      product.type > 2
+        ? product.type.slice(0, 3)
+        : product.type ||
+          cartItems.map((item) =>
+            item.type > 4 ? item.type.slice(0, 3) : item.type
+          );
 
-    const userId = product.userId || cartItems[0].userId
-    const id = product._id || cartItems[0]._id
-   
+    const userId = product.userId || cartItems[0].userId;
+    const id = product._id || cartItems[0]._id;
+
     let aggregationPipeline = [{ $match: { userId: userId } }];
-
-
-
 
     if (query) {
       aggregationPipeline.push({
@@ -212,22 +213,22 @@ export const relatedProducts = async (req, res) => {
         },
       });
 
-     
-      const cartIds = cartItems.map(item => item._id)
+      const cartIds = cartItems.map((item) => item._id);
       const products = await Product.aggregate(aggregationPipeline);
       const filteredProduct = products.filter(
-        (item) => item._id.toString() !== id && !cartIds.includes(item._id.toString())
+        (item) =>
+          item._id.toString() !== id && !cartIds.includes(item._id.toString())
       );
       if (filteredProduct.length === 0) {
         const availableProducts = await Product.aggregate([
           { $match: { userId: userId } },
-          { $sample: { size: 7 } }
-        ]
-        );
+          { $sample: { size: 7 } },
+        ]);
         const filteredProducts = availableProducts.filter(
-          (item) => item._id.toString() !== id && !cartIds.includes(item._id.toString())
+          (item) =>
+            item._id.toString() !== id && !cartIds.includes(item._id.toString())
         );
-       return res.status(200).json(filteredProducts);
+        return res.status(200).json(filteredProducts);
       }
       res.status(200).json(filteredProduct);
     }

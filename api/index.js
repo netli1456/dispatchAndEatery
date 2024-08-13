@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
-import userRouter from './routes/user.js';
 import productRouter from './routes/product.js';
 import reviewRouter from './routes/reviews.js';
 import OrderRouter from './routes/orders.js';
@@ -10,7 +9,8 @@ import Flutterwave from 'flutterwave-node-v3';
 import flutterRouter from './routes/flutter.js';
 import transactionRouter from './routes/transactionHistory.js';
 import cookieParser from 'cookie-parser';
-import { authMiddleware } from './middleWare/midleware.js';
+import { authMiddleware } from './middleWareAuth/midleware.js';
+import userRouter from './routes/userRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -25,8 +25,8 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'http://localhost:3000', 
-    credentials: true, 
+    origin: 'http://localhost:3000',
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
     preflightContinue: false,

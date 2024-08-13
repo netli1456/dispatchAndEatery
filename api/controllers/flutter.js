@@ -1,8 +1,7 @@
-import Flutterwave from 'flutterwave-node-v3';
-import User from '../models/User.js';
 import { flw } from '../index.js';
 import Account from '../models/accounts.js';
 import crypto from 'crypto';
+import User from '../models/userModel.js';
 
 export const createVirtuaAccount = async (req, res) => {
   try {
@@ -19,7 +18,6 @@ export const createVirtuaAccount = async (req, res) => {
         amount: 1,
       };
       const response = await flw.VirtualAcct.create(details);
-      console.log(response);
       if (response.status === 'success') {
         const account = new Account({
           bank: response.data.bank_name,
@@ -58,7 +56,6 @@ export const deposited = async (req, res) => {
       return res.status(401).send('Unauthorized');
     }
     const eventData = req.body;
-    console.log('Received webhook data:', eventData);
 
     // Extract relevant transaction details
 
@@ -95,15 +92,14 @@ export const initTrans = async () => {
       amount: 5500,
       narration: 'Akhlm Pstmn Trnsfr xx007',
       currency: 'NGN',
-      reference: 'akhlm-pstmnpyt-r02ens007_PMCKDU_1', //This is a merchant's unique reference for the transfer, it can be used to query for the status of the transfer
+      reference: 'akhlm-pstmnpyt-r02ens007_PMCKDU_1', 
       callback_url: 'https://www.flutterwave.com/ng/',
       debit_currency: 'NGN',
     };
 
     const response = await flw.Transfer.initiate(payload);
-    console.log(response);
   } catch (error) {
-    console.log(error);
+    res.status(500).json({message: error.message});
   }
 };
 
@@ -120,11 +116,11 @@ export const fetch = async (req, res) => {
     }
 
     const payload = {
-      order_ref: account.order_ref +'12',
+      order_ref: account.order_ref + '12',
     };
     const response = await flw.VirtualAcct.fetch(payload);
     return res.status(200).json(response);
   } catch (error) {
-    console.log(error);
+   res.status(501).json({message: error.message});
   }
 };

@@ -6,7 +6,7 @@ import {
   refundAndCancelOrder,
   takeOrder,
 } from '../controllers/orders.js';
-import { authMiddleware } from '../middleWare/midleware.js';
+import { authMiddleware } from '../middleWareAuth/midleware.js';
 
 const OrderRouter = express.Router();
 

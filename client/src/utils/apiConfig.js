@@ -2,10 +2,10 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { useEffect, useState } from 'react';
 
 
-export const api ='https://biteapinew.onrender.com';
+// export const api ='https://biteapinew.onrender.com';
 
 
-// export const api = 'http://localhost:5000';
+export const api = 'http://localhost:5000';
 
 export const useFingerprint = () => {
     const [fingerprint, setFingerprint] = useState('');
