@@ -34,7 +34,7 @@ export const checkingLoggedInDevices = async ({
         (existingDevice.otp = !creation
           ? `logged in on ${Date.now()}`
           : creation),
-          (otpverificationDevice.otpIsVerified = creation && true);
+          (existingDevice.otpIsVerified = creation && true);
         await loggedIndevices.save();
       } else {
         existingDevice.ip = devices.ip;
