@@ -24,7 +24,9 @@ export const deviceCheck = (req) => {
     browser = deviceInfo.client.name || 'Unknown';
   }
 
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const ip = req.headers['x-forwarded-for'] 
+  ? req.headers['x-forwarded-for'].split(',')[0].trim() 
+  : req.connection.remoteAddress;
   const location = geoip.lookup(ip);
 
   return {

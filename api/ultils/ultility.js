@@ -17,6 +17,7 @@ export const checkingLoggedInDevices = async ({
   res,
 }) => {
   const devices = deviceCheck(req);
+
   const loggedIndevices = await Device.findOne({
     userId: user._id.toString(),
   });
@@ -27,33 +28,22 @@ export const checkingLoggedInDevices = async ({
     );
 
     if (existingDevice) {
-      if (existingDevice.ip === devices.ip ) {
-        const otpverificationDevice = loggedIndevices.devices.find(
-          (device) =>
-            device.ip === devices.ip ||
-            !device.otpIsVerified ||
-            device.fingerprint === devices.fingerprint
-        );
-        ((otpverificationDevice.otp = !creation
-          ? await sendVerificationEmail({ user, text, subject, warning, res })
+      if (existingDevice.otpIsVerified) {
+        existingDevice.ip = devices.ip;
+        (existingDevice.otp = !creation
+          ? `logged in on ${Date.now()}`
           : creation),
-        (otpverificationDevice.otpIsVerified = !creation ? false : true)),
-          await loggedIndevices.save();
-        return true;
-      }
-
-      if (existingDevice.ip !== devices.ip && existingDevice.otpIsVerified) {
-        const newDevice = {
-          fingerprint: fingerprints,
-          device: devices.device,
-          ip: devices.ip,
-          location: devices.location,
-          browser: devices.browser,
-          otpIsVerified: true,
-        };
-
-        loggedIndevices.devices.push(newDevice);
+          (otpverificationDevice.otpIsVerified = creation && true);
         await loggedIndevices.save();
+      } else {
+        existingDevice.otp = await sendVerificationEmail({
+          user,
+          text,
+          subject,
+          warning,
+          res,
+        });
+        return true;
       }
     } else {
       loggedIndevices.devices.push({
@@ -130,7 +120,7 @@ export const checkIfCurrentDeviceMatchAnyInDb = ({ newloginDetails, req }) => {
     ? req.body.fingerprint
     : req.params.fingerprint;
 
-    console.log('fingerprint from chechkif', fingerprint)
+  console.log('fingerprint from chechkif', fingerprint);
 
   const verifyDevice = newloginDetails.devices.find(
     (device) =>

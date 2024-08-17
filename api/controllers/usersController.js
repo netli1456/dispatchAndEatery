@@ -238,12 +238,16 @@ export const resendOtp = async (req, res) => {
 export const userLogin = async (req, res) => {
   try {
     const { password, fingerprint } = req.body;
+
     const fingerprints = fingerprint;
+
     const creation =
       'unfinished registration on another device. otp sent to user document';
+
     const user = await User.findOne({
       email: req.body.email,
     });
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -253,6 +257,7 @@ export const userLogin = async (req, res) => {
       if (!isCorrect)
         return res.status(401).json({ message: 'wrong credentials' });
     }
+
     let userDetails = {
       email: user.email,
       url:
@@ -263,8 +268,10 @@ export const userLogin = async (req, res) => {
         user.firstname,
       rdt: undefined,
     };
+
     const device = deviceCheck(req);
     const emailMessage = emailText(device);
+    
     if (!user.otpIsVerified) {
       user.otp = await sendVerificationEmail({
         user,
