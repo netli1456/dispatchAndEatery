@@ -17,6 +17,8 @@ import Button from 'react-bootstrap/Button';
 import { clearLocation } from '../redux/searchSlice';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useOpen } from '../utils/isOpenState';
+import axios from 'axios';
+import { api } from '../utils/apiConfig';
 
 function Navbar(props) {
   const navigate = useNavigate();
@@ -26,13 +28,16 @@ function Navbar(props) {
   const dispatch = useDispatch();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { searchedLocation } = useSelector((state) => state.searching);
-  const { setOpenNow, } = props;
+  const { setOpenNow } = props;
+  const { isOpen, toggle } = useOpen();
 
-  const handleLogOut = () => {
+
+  const handleLogOut = async () => {
+    await axios.post(`${api}/api/users/logout`);
+    navigate('/signin');
     dispatch(clearUserInfo());
     dispatch(clearCart());
     dispatch(clearShipping());
-    // dispatch(clearUserInfo());
     dispatch(clearLocation());
   };
 
@@ -52,10 +57,9 @@ function Navbar(props) {
     setOpenNow();
   };
 
-  const {isOpen, toggle} =useOpen()
 
   return (
-    <div className="bg-success py-2" style={{ width: '100%' ,  }}>
+    <div className="bg-success py-2" style={{ width: '100%' }}>
       <Container className="text-white py-1 d-flex justify-content-between align-items-center">
         <div className="d-flex gap-3 align-items-center navbarIcon px-2">
           <MenuIcon className="fs-2 fw-bold" />
@@ -82,7 +86,7 @@ function Navbar(props) {
             onClick={() => navigate('/cart')}
             style={{ position: 'relative', cursor: 'pointer' }}
           >
-            < AddShoppingCartIcon
+            <AddShoppingCartIcon
               className={
                 location.pathname === '/cart'
                   ? 'fs-2 fw-bold  border border-white text-white color-white rounded'
@@ -122,7 +126,7 @@ function Navbar(props) {
                   style={{
                     position: 'absolute',
                     top: 35,
-                    
+
                     right: 0,
                     minWidth: '200px',
                   }}
@@ -131,7 +135,7 @@ function Navbar(props) {
                     <Link
                       to={`/profile/${userInfo?.user?._id}`}
                       className="text-decoration-none text-success fw-bold d-flex flex-column align-items-center px-3"
-                      onClick={()=>toggle()}
+                      onClick={() => toggle()}
                     >
                       Account
                     </Link>

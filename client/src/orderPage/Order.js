@@ -97,10 +97,10 @@ function Order() {
 
 
   useEffect(() => {
-    if (!userInfo?.user?._id && !userInfo?.token) {
+    if (!userInfo?.user?._id ) {
       navigate('/signin');
     }
-  }, [userInfo?.user?._id, userInfo?.token, navigate]);
+  }, [userInfo?.user?._id,  navigate]);
 
   const refundAndCancelOrder = async (orderId) => {
     try {
@@ -113,7 +113,11 @@ function Order() {
         details: { ...prevData.details, isCancelled: data },
       }));
     } catch (error) {
-      console.error(error);
+      toast.error(error?.response?.data?.message, {
+        autoClose: 5000,
+        theme: 'colored',
+        toastId: 'unique-toast-id',
+      });
     }
   };
 

@@ -16,7 +16,6 @@ import { Box, Skeleton } from '@mui/material';
 import Button from 'react-bootstrap/esm/Button';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
-import NotInterestedIcon from '@mui/icons-material/NotInterested';
 import DoNotDisturbOffIcon from '@mui/icons-material/DoNotDisturbOff';
 
 const Profile = () => {
@@ -110,13 +109,14 @@ const Profile = () => {
 
   useEffect(() => {
     if (error) {
-      dispatch(clearUserInfo());
-
-      navigate('/signin');
+      const handleLogOut = async () => {
+         await axios.post(`${api}/api/users/logout`);
+        navigate('/signin');
+        dispatch(clearUserInfo());
+      };
+      handleLogOut();
     }
   }, [navigate, dispatch, error]);
-
-  const itemDelivered = (item) => {};
 
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>

@@ -316,6 +316,16 @@ export const userLogin = async (req, res) => {
   }
 };
 
+export const logOut = (req, res) => {
+  res.cookie('auth_token', '', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    expires: new Date(0), // Expire the cookie immediately
+  });
+  res.status(200).json({ message: 'Logged out successfully' });
+};
+
 export const passwordChange = async (req, res) => {
   try {
     const fingerprints = req.body.fingerprint;
