@@ -24,15 +24,15 @@ export const deviceCheck = (req) => {
     browser = deviceInfo.client.name || 'Unknown';
   }
 
-  const ip = req.headers['x-forwarded-for'] 
-  ? req.headers['x-forwarded-for'].split(',')[0].trim() 
-  : req.connection.remoteAddress;
+  const ip = req.headers['x-forwarded-for']
+    ? req.headers['x-forwarded-for'].split(',')[0].trim()
+    : req.connection.remoteAddress;
   const location = geoip.lookup(ip);
 
   return {
     device: `${deviceType} ${os}`,
     ip: ip,
-    location: location ? JSON.stringify(location) : 'Unknown',
+    location: location ? `${location.city}, ${location.country}` : 'Unknown',
     browser: browser,
   };
 };
@@ -40,7 +40,7 @@ export const deviceCheck = (req) => {
 export const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.auth_token;
- console.log('token', token);
+    console.log('token', token);
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
     }
@@ -56,7 +56,6 @@ export const authMiddleware = async (req, res, next) => {
       userId: user._id.toString(),
     });
     if (!newloginDetails) {
-
       return res
         .status(404)
         .json({ message: 'please login to perform this action' });
