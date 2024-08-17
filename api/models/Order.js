@@ -13,7 +13,7 @@ const orderSchema = new mongoose.Schema(
       },
     ],
     shippingAddress: {
-        name: { type: String, required: true},
+      name: { type: String, required: true },
       state: { type: String, required: true },
       country: { type: String, required: true },
       street: { type: String, required: true },
@@ -23,7 +23,7 @@ const orderSchema = new mongoose.Schema(
     isDelivered: { type: Boolean, default: false },
     isPaid: { type: Boolean, default: false },
     isCancelled: { type: Boolean, default: false },
-    isTaken: { type:Date },
+    isTaken: { type: Date },
     buyerId: { type: String, required: true },
     businessId: { type: String, required: true },
     isDeliveredAt: { type: Date },

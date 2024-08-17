@@ -27,8 +27,8 @@ app.use(
   cors({
     origin: 'https://mbitee.onrender.com',
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'], 
     preflightContinue: false,
     optionsSuccessStatus: 204,
   })
