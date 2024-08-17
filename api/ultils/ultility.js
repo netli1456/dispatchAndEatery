@@ -27,7 +27,7 @@ export const checkingLoggedInDevices = async ({
     );
 
     if (existingDevice) {
-      if (existingDevice.ip === devices.ip && !existingDevice.otpIsVerified) {
+      if (existingDevice.ip === devices.ip ) {
         const otpverificationDevice = loggedIndevices.devices.find(
           (device) =>
             device.ip === devices.ip ||
@@ -42,13 +42,14 @@ export const checkingLoggedInDevices = async ({
         return true;
       }
 
-      if (existingDevice.ip !== devices.ip) {
+      if (existingDevice.ip !== devices.ip && existingDevice.otpIsVerified) {
         const newDevice = {
           fingerprint: fingerprints,
           device: devices.device,
           ip: devices.ip,
           location: devices.location,
           browser: devices.browser,
+          otpIsVerified: true,
         };
 
         loggedIndevices.devices.push(newDevice);
@@ -128,7 +129,7 @@ export const checkIfCurrentDeviceMatchAnyInDb = ({ newloginDetails, req }) => {
   const fingerprint = req.body.fingerprint
     ? req.body.fingerprint
     : req.params.fingerprint;
-    
+
     console.log('fingerprint from chechkif', fingerprint)
 
   const verifyDevice = newloginDetails.devices.find(
