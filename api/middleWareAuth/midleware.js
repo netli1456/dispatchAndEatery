@@ -77,7 +77,11 @@ export const authMiddleware = async (req, res, next) => {
       expiresIn: process.env.TOKEN_EXPIRATION,
     });
 
-    res.cookie('auth_token', newToken, { httpOnly: true });
+    res.cookie('auth_token', newToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
 
     req.deviceType = verifyDevice.device;
     req.user = user;

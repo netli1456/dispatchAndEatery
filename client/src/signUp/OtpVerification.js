@@ -83,15 +83,15 @@ function OtpVerification() {
       const { data } = await axios.post(`${api}/api/users/verification`, {
         email: userInfo?.user?.email || userInfo.email,
         otpCode: otp.join(''),
-        fingerprint: userInfo?.user?.rdt,
-        resetPasswordOtp: userInfo?.user.resetPasswordOtp,
+        fingerprint: userInfo?.user?.rdt || userInfo.fingerprint,
+        resetPasswordOtp: userInfo?.user.resetPasswordOtp || userInfo.resetPasswordOtp,
       });
 
       dispatch(fetchSuccess(data));
       navigate('/');
       setLoading(false);
-      if (data?.user?.firstname) {
-        toast.success(`Welcome! ${data?.user?.firstname}`, {
+      if (data?.user?.firstname || data.firstname) {
+        toast.success(`Welcome! ${data?.user?.firstname || data.firstname}`, {
           autoClose: false,
           theme: 'light',
           toastId: 'unique-toast-id',
@@ -104,7 +104,7 @@ function OtpVerification() {
         toastId: 'unique-toast-id',
       });
       setLoading(false);
-      console.log(error);
+     
     }
   };
 
@@ -127,17 +127,17 @@ function OtpVerification() {
 
   const handleCount = async () => {
     try {
-     if(!userInfo?.user?.resetPasswordOtp){
-      await axios.post(`${api}/api/users/resendOtp`, {
-        email: userInfo?.user?.email || userInfo?.email,
-        fingerprint: userInfo?.user?.rdt || userInfo?.rdt,
-      });
-     }else{
-      await axios.post(`${api}/api/users/resetpassword`, {
-        email: userInfo?.user?.email,
-        fingerprint: userInfo?.user?.rdt,
-      });
-     }
+      if (!userInfo?.user?.resetPasswordOtp || userInfo.resetPasswordOtp) {
+        await axios.post(`${api}/api/users/resendOtp`, {
+          email: userInfo?.user?.email || userInfo?.email,
+          fingerprint: userInfo?.user?.rdt || userInfo?.rdt,
+        });
+      } else {
+        await axios.post(`${api}/api/users/resetpassword`, {
+          email: userInfo?.user?.email  || userInfo?.email,
+          fingerprint: userInfo?.user?.rdt || userInfo?.fingerprint,
+        });
+      }
       dispatch(updateCountDown(60));
       toast.success(`sent successfully, check your email.`, {
         autoClose: true,
@@ -150,18 +150,18 @@ function OtpVerification() {
   };
 
   useEffect(() => {
-    if (userInfo?.user?._id) {
+    if (userInfo?.user?._id || userInfo?._id) {
       navigate('/');
-    } else if (userInfo?.user?.urlf) {
-      navigate(`/newpassword/change/${userInfo?.user?.urlf}/change`);
+    } else if (userInfo?.user?.urlf || userInfo?.urlf) {
+      navigate(`/newpassword/change/${userInfo?.user?.urlf || userInfo?.urlf}/change`);
     } else {
+      navigate('/signin')
     }
   });
 
   return (
     <div style={{ overflowX: 'hidden' }}>
-    
-     <Row>
+      <Row>
         <Col
           className="border m-auto  "
           style={{ height: '80vh', overflowX: 'hidden' }}
@@ -177,12 +177,23 @@ function OtpVerification() {
               />
             </div>
             <div className="d-flex flex-column text-center ">
-              <strong className="fs-3 fw-bold">{userInfo?.user?.resetPasswordOtp  ? 'Email verification': 'Verify this device' }</strong>
+              <strong className="fs-3 fw-bold">
+                {userInfo?.user?.resetPasswordOtp || userInfo?.resetPasswordOtp
+                  ? 'Email verification'
+                  : 'Verify this device'}
+              </strong>
               <span>
-               {userInfo?.user?.resetPasswordOtp ? `For us to know that you are the owner of this account, `:''} <br /> A verification code has been sent to{' '}
+                {userInfo?.user?.resetPasswordOtp || userInfo?.resetPasswordOtp
+                  ? `For us to know that you are the owner of this account, `
+                  : ''}{' '}
+                <br /> A verification code has been sent to{' '}
                 <strong>{`${'*'.repeat(
-                  userInfo?.user?.email?.length - 13
-                )}${userInfo?.user?.email?.slice(-13)}`}</strong>
+                  userInfo?.user?.email?.length - 13 ||
+                    userInfo?.email?.length - 13
+                )}${
+                  userInfo?.user?.email?.slice(-13) ||
+                  userInfo?.email?.slice(-13)
+                } `}</strong>
               </span>
               <form
                 id="otpForm"
