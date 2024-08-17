@@ -54,14 +54,13 @@ export const authMiddleware = async (req, res, next) => {
       userId: user._id.toString(),
     });
     if (!newloginDetails) {
-      console.error('Please login to perform this action');
 
       return res
         .status(404)
         .json({ message: 'please login to perform this action' });
     }
 
-    const verifyDevice = checkIfCurrentDeviceMatchAnyInDb({
+    const verifyDevice = await checkIfCurrentDeviceMatchAnyInDb({
       newloginDetails,
       req,
     });
@@ -83,7 +82,7 @@ export const authMiddleware = async (req, res, next) => {
       sameSite: 'None',
     });
 
-    req.deviceType = verifyDevice.device;
+    req.device = verifyDevice.device;
     req.user = user;
 
     next();
