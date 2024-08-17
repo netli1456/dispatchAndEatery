@@ -38,7 +38,7 @@ export const deviceCheck = (req) => {
 export const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.auth_token;
-
+ console.log('token', token);
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
     }
@@ -64,6 +64,8 @@ export const authMiddleware = async (req, res, next) => {
       newloginDetails,
       req,
     });
+    console.log('checkIfCurrentDeviceMatchDb', verifyDevice);
+
     if (!verifyDevice) {
       console.error('Verification failed, switch off VPN if active');
 
@@ -81,6 +83,7 @@ export const authMiddleware = async (req, res, next) => {
       secure: true,
       sameSite: 'None',
     });
+    console.log('newtoken', newToken);
 
     req.device = verifyDevice.device;
     req.user = user;

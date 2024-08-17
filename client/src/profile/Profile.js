@@ -53,19 +53,22 @@ const Profile = () => {
 
       const result = await fp.get();
       const fingerprint = result.visitorId;
-      try {
-        const { data } = await axios.get(
-          `${api}/api/orders/${fingerprint}/allorders/${userInfo?.user?._id}?query=${query}`
-        );
-        setData(data);
-        setLoading(false);
-        setCounts(data?.counts);
-      } catch (error) {
-        toast.error(error?.response?.data?.message, {
-          toastId: 'unique_toast_id',
-        });
-        setError(error?.response?.data?.message);
-        setLoading(false);
+      console.log(fingerprint ? `there is fingerprint ${fingerprint}` :"no fingerprint" );
+      if (fingerprint) {
+        try {
+          const { data } = await axios.get(
+            `${api}/api/orders/${fingerprint}/allorders/${userInfo?.user?._id}?query=${query}`
+          );
+          setData(data);
+          setLoading(false);
+          setCounts(data?.counts);
+        } catch (error) {
+          toast.error(error?.response?.data?.message, {
+            toastId: 'unique_toast_id',
+          });
+          setError(error?.response?.data?.message);
+          setLoading(false);
+        }
       }
     };
     handleOrder();
@@ -107,16 +110,16 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    if (error) {
-      const handleLogOut = async () => {
-         await axios.post(`${api}/api/users/logout`);
-        navigate('/signin');
-        dispatch(clearUserInfo());
-      };
-      handleLogOut();
-    }
-  }, [navigate, dispatch, error]);
+  // useEffect(() => {
+  //   if (error) {
+  //     const handleLogOut = async () => {
+  //        await axios.post(`${api}/api/users/logout`);
+  //       navigate('/signin');
+  //       dispatch(clearUserInfo());
+  //     };
+  //     handleLogOut();
+  //   }
+  // }, [navigate, dispatch, error]);
 
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>

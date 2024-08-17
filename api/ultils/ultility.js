@@ -128,6 +128,9 @@ export const checkIfCurrentDeviceMatchAnyInDb = ({ newloginDetails, req }) => {
   const fingerprint = req.body.fingerprint
     ? req.body.fingerprint
     : req.params.fingerprint;
+    
+    console.log('fingerprint from chechkif', fingerprint)
+
   const verifyDevice = newloginDetails.devices.find(
     (device) =>
       device.fingerprint === fingerprint &&
