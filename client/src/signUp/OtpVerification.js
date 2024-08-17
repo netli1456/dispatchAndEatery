@@ -155,7 +155,6 @@ function OtpVerification() {
     } else if (userInfo?.user?.urlf || userInfo?.urlf) {
       navigate(`/newpassword/change/${userInfo?.user?.urlf || userInfo?.urlf}/change`);
     } else {
-      navigate('/signin')
     }
   });
 
