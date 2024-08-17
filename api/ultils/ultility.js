@@ -93,7 +93,11 @@ export const sendToken = ({ user, res }) => {
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.TOKEN_EXPIRATION,
   });
-  res.cookie('auth_token', token, { httpOnly: true });
+  res.cookie('auth_token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+  });
 };
 
 export const checkOtpexpiration = ({ user, otpCode, res }) => {
