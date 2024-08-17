@@ -43,6 +43,8 @@ export const checkingLoggedInDevices = async ({
           warning,
           res,
         });
+        
+        await loggedIndevices.save();
         return true;
       }
     } else {
