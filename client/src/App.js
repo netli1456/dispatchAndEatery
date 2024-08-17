@@ -22,12 +22,12 @@ import ChangePassword from './signIn/ChangePassword';
 
 function App() {
   const { isOpen, toggle } = useOpen();
-  axios.defaults.withCredentials = true; 
+  axios.defaults.withCredentials = true;
 
   return (
     <BrowserRouter>
       <div
-        style={{ 
+        style={{
           width: '100%',
           position: isOpen ? 'relative' : '',
           height: isOpen ? '100vh' : '',
@@ -63,7 +63,7 @@ function App() {
           </div>
         )}
         <Routes>
-          <Route path="/" element={<HomePage setOpen={toggle}/>} />
+          <Route path="/" element={<HomePage setOpen={toggle} />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/kitchen/:id" element={<Kitchen />} />
@@ -79,12 +79,13 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
-         
-          
           <Route path="/verification/:url/auth" element={<OtpVerification />} />
-         
+
           <Route path="/recover/account" element={<EmailOtpForPassword />} />
-          <Route path="/newpassword/change/:urlf/change" element={<ChangePassword />} />
+          <Route
+            path="/newpassword/change/:urlf/change"
+            element={<ChangePassword />}
+          />
         </Routes>
       </div>
     </BrowserRouter>

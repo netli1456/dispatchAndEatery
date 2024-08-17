@@ -53,7 +53,7 @@ const Profile = () => {
 
       const result = await fp.get();
       const fingerprint = result.visitorId;
-      console.log(fingerprint ? `there is fingerprint ${fingerprint}` :"no fingerprint" );
+     
       if (fingerprint) {
         try {
           const { data } = await axios.get(
@@ -110,16 +110,16 @@ const Profile = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (error) {
-  //     const handleLogOut = async () => {
-  //        await axios.post(`${api}/api/users/logout`);
-  //       navigate('/signin');
-  //       dispatch(clearUserInfo());
-  //     };
-  //     handleLogOut();
-  //   }
-  // }, [navigate, dispatch, error]);
+  useEffect(() => {
+    if (error) {
+      const handleLogOut = async () => {
+         await axios.post(`${api}/api/users/logout`);
+        navigate('/signin');
+        dispatch(clearUserInfo());
+      };
+      handleLogOut();
+    }
+  }, [navigate, dispatch, error]);
 
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>

@@ -30,12 +30,15 @@ export const checkingLoggedInDevices = async ({
     if (existingDevice) {
       if (existingDevice.otpIsVerified) {
         existingDevice.ip = devices.ip;
+        existingDevice.location = devices.location;
         (existingDevice.otp = !creation
           ? `logged in on ${Date.now()}`
           : creation),
           (otpverificationDevice.otpIsVerified = creation && true);
         await loggedIndevices.save();
       } else {
+        existingDevice.ip = devices.ip;
+        existingDevice.location = devices.location;
         existingDevice.otp = await sendVerificationEmail({
           user,
           text,
@@ -122,7 +125,6 @@ export const checkIfCurrentDeviceMatchAnyInDb = ({ newloginDetails, req }) => {
     ? req.body.fingerprint
     : req.params.fingerprint;
 
-  console.log('fingerprint from chechkif', fingerprint);
 
   const verifyDevice = newloginDetails.devices.find(
     (device) =>
