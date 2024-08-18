@@ -25,7 +25,6 @@ function EmailOtpForPassword() {
         email: email,
         fingerprint: fingerprint,
       });
-     
       dispatch(fetchSuccess(data));
       setData(data);
       setLoading(false);

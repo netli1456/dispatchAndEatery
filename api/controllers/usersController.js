@@ -68,7 +68,7 @@ export const userRegister = async (req, res) => {
 
     const userData = {
       email: user.email,
-      rdt: req.body.fingerprint,
+      fingerprint:req.body.fingerprint,
       url:
         user.surname +
         (user.createdAt ? user.createdAt.toISOString() : '') +
@@ -76,7 +76,7 @@ export const userRegister = async (req, res) => {
         (user.otpCreatedAt ? user.otpCreatedAt.toISOString() : '') +
         user.firstname,
     };
-    res.status(200).json(userData);
+    res.status(200).json({user:userData});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -95,6 +95,8 @@ export const verifyOtp = async (req, res) => {
       user = sentResetOtpUser;
       const userData = {
         email: user.email,
+        name:`${user.firstname } ${ user.surname}`,
+        img:user.img,
         urlf:
           user.surname +
           (user.createdAt ? user.createdAt.toISOString() : '') +
@@ -360,6 +362,7 @@ export const passwordChange = async (req, res) => {
 
     const userDetails = {
       email: user.email,
+    
       url:
         user.surname +
         (user.createdAt ? user.createdAt.toISOString() : '') +

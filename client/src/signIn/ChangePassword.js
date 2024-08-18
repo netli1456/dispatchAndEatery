@@ -27,6 +27,8 @@ function ChangePassword() {
       });
       dispatch(fetchSuccess(data));
       setLoading(false);
+      toast.success('Password changed successfully');
+      setLoading(false);
     } catch (error) {
       toast.error(error?.response?.data?.message);
       setLoading(false);

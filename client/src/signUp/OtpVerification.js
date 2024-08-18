@@ -7,8 +7,8 @@ import Button from 'react-bootstrap/esm/Button';
 import axios from 'axios';
 import { api } from '../utils/apiConfig';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSuccess, updateCountDown } from '../redux/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { clearCount, fetchSuccess, updateCountDown } from '../redux/userSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Spinners from '../utils/Spinner';
 
@@ -53,7 +53,7 @@ function OtpVerification() {
     return () => {
       otpForm?.removeEventListener('paste', handlePaste);
     };
-  }, []);
+  },);
 
   const handleInputChange = (index) => (event) => {
     const value = event.target.value;
@@ -83,7 +83,7 @@ function OtpVerification() {
       const { data } = await axios.post(`${api}/api/users/verification`, {
         email: userInfo?.user?.email || userInfo.email,
         otpCode: otp.join(''),
-        fingerprint: userInfo?.user?.rdt || userInfo.fingerprint,
+        fingerprint: userInfo?.user?.rdt || userInfo?.rdt,
         resetPasswordOtp: userInfo?.user.resetPasswordOtp || userInfo.resetPasswordOtp,
       });
 
@@ -130,7 +130,7 @@ function OtpVerification() {
       if (!userInfo?.user?.resetPasswordOtp || userInfo.resetPasswordOtp) {
         await axios.post(`${api}/api/users/resendOtp`, {
           email: userInfo?.user?.email || userInfo?.email,
-          fingerprint: userInfo?.user?.rdt || userInfo?.rdt,
+          fingerprint: userInfo?.user?.rdt || userInfo?.user.fingerprint,
         });
       } else {
         await axios.post(`${api}/api/users/resetpassword`, {
@@ -151,10 +151,20 @@ function OtpVerification() {
 
   useEffect(() => {
     if (userInfo?.user?._id || userInfo?._id) {
+      dispatch(clearCount())
       navigate('/');
     } else if (userInfo?.user?.urlf || userInfo?.urlf) {
+      dispatch(clearCount())
       navigate(`/newpassword/change/${userInfo?.user?.urlf || userInfo?.urlf}/change`);
     } else {
+    }
+  });
+const location =useLocation()
+
+  useEffect(() => {
+    if (location.pathname !== `/verification/${userInfo?.user?.url}/auth`) {
+      dispatch(clearCount())
+      
     }
   });
 
@@ -175,7 +185,7 @@ function OtpVerification() {
                 style={{ width: '120px', height: '120px' }}
               />
             </div>
-            <div className="d-flex flex-column text-center ">
+            <div className="d-flex flex-column text-center">
               <strong className="fs-3 fw-bold">
                 {userInfo?.user?.resetPasswordOtp || userInfo?.resetPasswordOtp
                   ? 'Email verification'
@@ -196,7 +206,7 @@ function OtpVerification() {
               </span>
               <form
                 id="otpForm"
-                className="d-flex gap-2 my-4 justify-content-center align-items-center "
+                className="d-flex gap-1 my-4 justify-content-center align-items-center "
                 onSubmit={handleVerification}
               >
                 {[...Array(6)].map((_, index) => (

@@ -54,7 +54,7 @@ function SignUp() {
         });
         dispatch(fetchSuccess(data));
 
-        navigate(`/verification/${data?.url}/auth`);
+        navigate(`/verification/${data?.user?.url}/auth`);
         setLoading(false);
         dispatch(updateCountDown(60));
         toast.error('verify your email', {

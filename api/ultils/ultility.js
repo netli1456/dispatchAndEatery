@@ -97,6 +97,7 @@ export const sendToken = ({ user, res }) => {
 };
 
 export const checkOtpexpiration = ({ user, otpCode, res }) => {
+
   if (!otpCode || user.otpIsVerified) {
     return res.status(400).json({ message: 'Invalid request' });
   }

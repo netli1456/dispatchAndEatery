@@ -8,11 +8,14 @@ import { Link } from 'react-router-dom';
 import Footer from '../footerSection/Footer';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Spinners from '../utils/Spinner';
+import UserFrame from '../component/UserFrame';
+import { useSelector } from 'react-redux';
 
 function ResetPassword(props) {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  const { setEmail, handleResetPassword, setPassword, isPassword, loading } = props;
+  const { userInfo } = useSelector((state) => state.user);
+  const { setEmail, handleResetPassword, setPassword, isPassword, loading } =
+    props;
   useEffect(() => {
     const checkScreenSize = () => {
       setIsSmallScreen(window.innerWidth < 760);
@@ -49,9 +52,19 @@ function ResetPassword(props) {
           <h3 className="fw-bold ">
             {isPassword ? 'Change your password' : 'Find your account'}
           </h3>
-          <p className="">
+          <p>
             {isPassword ? 'Enter a new password' : 'Enter your email address'}
           </p>
+          {isPassword && (
+            <div className="mb-2">
+              {' '}
+              <UserFrame
+                name={userInfo?.user?.name}
+                img={userInfo?.user?.img}
+              />{' '}
+            </div>
+          )}
+
           <Form onSubmit={handleResetPassword}>
             <InputGroup>
               <Form.Control
@@ -77,14 +90,13 @@ function ResetPassword(props) {
               >
                 Continue
               </Button>
-              {loading &&(
-                  <div style={{ position: 'absolute', top: 19, left: '45%' }}>
-                    {' '}
-                    <Spinners newColor={true}/>
-                  </div>
-                )}
+              {loading && (
+                <div style={{ position: 'absolute', top: 19, left: '45%' }}>
+                  {' '}
+                  <Spinners newColor={true} />
+                </div>
+              )}
             </div>
-            
           </Form>
           <Link
             to="/signin"

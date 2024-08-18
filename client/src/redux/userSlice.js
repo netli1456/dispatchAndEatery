@@ -20,6 +20,9 @@ export const userSlice = createSlice({
     updateCountDown: (state, action) => {
       state.countdown = action.payload;
     },
+    clearCount: (state) => {
+      state.countdown = 0;
+    },
   },
 });
 
@@ -29,6 +32,7 @@ export const {
   fetchSuccess,
   clearUserInfo,
   updateCountDown,
+  clearCount
 } = userSlice.actions;
 
 export default userSlice.reducer;
