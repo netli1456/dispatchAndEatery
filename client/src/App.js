@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, } from 'react-router-dom';
 import './App.css';
 import HomePage from './homeSection/HomePage';
 import Product from './singlePageSection/Product';
@@ -20,9 +20,11 @@ import axios from 'axios';
 import EmailOtpForPassword from './signIn/EmailOtpForPassword';
 import ChangePassword from './signIn/ChangePassword';
 
+
 function App() {
   const { isOpen, toggle } = useOpen();
   axios.defaults.withCredentials = true;
+  
 
   return (
     <BrowserRouter>

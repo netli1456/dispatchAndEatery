@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Map from '../component/Map';
 import HouseOutlinedIcon from '@mui/icons-material/HouseOutlined';
 import Cards from '../component/Cards';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './homePage.css';
 import HomeFeatures from './HomeFeatures';
 import Footer from '../footerSection/Footer';
 
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { api } from '../utils/apiConfig';
 
 import { Box, Skeleton } from '@mui/material';
@@ -16,6 +16,7 @@ import LetsDoItTogether from './LetsDoItTogether';
 import CategoryLayout from './CategoryLayout';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { toast } from 'react-toastify';
+import { clearCount } from '../redux/userSlice';
 
 function HomePage(props) {
   const [data, setData] = useState([]);
@@ -26,6 +27,10 @@ function HomePage(props) {
   const { cartItems } = useSelector((state) => state.cart);
   const userId = cartItems.length > 0 ? cartItems[0].userId : '';
   const [loading, setLoading] = useState(false);
+  const { userInfo } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  const location =useLocation()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +68,15 @@ function HomePage(props) {
 
     fetchData();
   }, []);
+
+  
+
+  useEffect(() => {
+    if (location.pathname !== `/verification/${userInfo?.user?.url}/auth`) {
+      dispatch(clearCount())
+      
+    }
+  },[location, userInfo, dispatch]);
 
   return (
     <div style={{ overflowX: 'hidden', backgroundColor: '' }}>

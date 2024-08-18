@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PhonelinkLockIcon from '@mui/icons-material/PhonelinkLock';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -8,72 +8,16 @@ import axios from 'axios';
 import { api } from '../utils/apiConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCount, fetchSuccess, updateCountDown } from '../redux/userSlice';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Spinners from '../utils/Spinner';
 
 function OtpVerification() {
-  const inputRefs = useRef([]);
   const [loading, setLoading] = useState(false);
   const { userInfo, countdown } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [otp, setOtp] = useState(new Array(6).fill(''));
-
-  useEffect(() => {
-    const handlePaste = (event) => {
-      event.preventDefault();
-      const pasteData = event.clipboardData?.getData('text') || '';
-
-      let index = 0;
-      const newOtp = [...otp];
-      for (
-        let i = 0;
-        i < pasteData?.length && index < inputRefs?.current?.length;
-        i++
-      ) {
-        inputRefs.current[index].value = pasteData[i];
-        newOtp[index] = pasteData[i];
-        index++;
-      }
-      setOtp(newOtp);
-
-      for (let i = 0; i < inputRefs?.current?.length - 1; i++) {
-        inputRefs?.current[i].addEventListener('input', () => {
-          if (inputRefs?.current[i]?.value?.length === 1) {
-            inputRefs?.current[i + 1].focus();
-          }
-        });
-      }
-    };
-
-    const otpForm = document.getElementById('otpForm');
-    otpForm?.addEventListener('paste', handlePaste);
-
-    return () => {
-      otpForm?.removeEventListener('paste', handlePaste);
-    };
-  },);
-
-  const handleInputChange = (index) => (event) => {
-    const value = event.target.value;
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    if (value && index < inputRefs?.current?.length - 1) {
-      inputRefs?.current[index + 1].focus();
-    }
-  };
-
-  const handleKeyDown = (index) => (event) => {
-    if (event.key === 'Backspace' && !otp[index]) {
-      if (index > 0) {
-        inputRefs.current[index - 1].focus();
-      }
-    }
-  };
+  const [otp, setOtp] = useState('');
 
   const handleVerification = async (e) => {
     e.preventDefault();
@@ -82,9 +26,10 @@ function OtpVerification() {
     try {
       const { data } = await axios.post(`${api}/api/users/verification`, {
         email: userInfo?.user?.email || userInfo.email,
-        otpCode: otp.join(''),
+        otpCode: otp,
         fingerprint: userInfo?.user?.rdt || userInfo?.rdt,
-        resetPasswordOtp: userInfo?.user.resetPasswordOtp || userInfo.resetPasswordOtp,
+        resetPasswordOtp:
+          userInfo?.user.resetPasswordOtp || userInfo.resetPasswordOtp,
       });
 
       dispatch(fetchSuccess(data));
@@ -104,7 +49,6 @@ function OtpVerification() {
         toastId: 'unique-toast-id',
       });
       setLoading(false);
-     
     }
   };
 
@@ -134,7 +78,7 @@ function OtpVerification() {
         });
       } else {
         await axios.post(`${api}/api/users/resetpassword`, {
-          email: userInfo?.user?.email  || userInfo?.email,
+          email: userInfo?.user?.email || userInfo?.email,
           fingerprint: userInfo?.user?.rdt || userInfo?.fingerprint,
         });
       }
@@ -151,22 +95,22 @@ function OtpVerification() {
 
   useEffect(() => {
     if (userInfo?.user?._id || userInfo?._id) {
-      dispatch(clearCount())
+      dispatch(clearCount());
       navigate('/');
     } else if (userInfo?.user?.urlf || userInfo?.urlf) {
-      dispatch(clearCount())
-      navigate(`/newpassword/change/${userInfo?.user?.urlf || userInfo?.urlf}/change`);
-    } else {
+      dispatch(clearCount());
+      navigate(
+        `/newpassword/change/${userInfo?.user?.urlf || userInfo?.urlf}/change`
+      );
+    } else if (!userInfo?.user?.url || userInfo?.urlf) {
+      navigate('/signin');
     }
   });
-const location =useLocation()
 
   useEffect(() => {
-    if (location.pathname !== `/verification/${userInfo?.user?.url}/auth`) {
-      dispatch(clearCount())
-      
+    if (!userInfo?.user?.url) {
     }
-  });
+  }, [userInfo, dispatch]);
 
   return (
     <div style={{ overflowX: 'hidden' }}>
@@ -203,27 +147,25 @@ const location =useLocation()
                   userInfo?.user?.email?.slice(-13) ||
                   userInfo?.email?.slice(-13)
                 } `}</strong>
+                <br />
+                check your email inbox or spam folder
               </span>
               <form
-                id="otpForm"
                 className="d-flex gap-1 my-4 justify-content-center align-items-center "
                 onSubmit={handleVerification}
               >
-                {[...Array(6)].map((_, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                    type="text"
-                    className="otpInput border-success fw-bold text-center"
-                    maxLength="1"
-                    size="1"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    onChange={handleInputChange(index)}
-                    onKeyDown={handleKeyDown(index)}
-                    value={otp[index]}
-                  />
-                ))}
+                <input
+                  type="text"
+                  className="rounded border-success fw-bold text-center"
+                  maxLength="6"
+                  size="20"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="enter code"
+                  value={otp}
+                />
+
                 <button type="submit" style={{ display: 'none' }}></button>
               </form>
               <Button
@@ -237,7 +179,7 @@ const location =useLocation()
               </Button>
               <div className="d-grid" style={{ position: 'relative' }}>
                 <Button
-                  disabled={otp.includes('')}
+                  disabled={otp.length < 6}
                   variant="success"
                   className="text-success rounded text-white fw-bold"
                   onClick={handleVerification}

@@ -36,7 +36,7 @@ function ChangePassword() {
   };
 
   useEffect(() => {
-    if (userInfo?.user?._id) {
+    if (userInfo?.user?._id || !userInfo?.user.urlf) {
       navigate(`/`);
     }
   }, [userInfo, navigate]);
