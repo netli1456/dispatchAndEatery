@@ -19,6 +19,7 @@ import {
 } from '../controllers/usersController.js';
 import { authMiddleware } from '../middleWareAuth/midleware.js';
 import { upload } from '../config/multer.js';
+// import { inserLoclToOnline } from '../controllers/migration.js';
 
 const userRouter = express.Router();
 
@@ -47,5 +48,6 @@ userRouter.post(
   uploads.single('businessImg'),
   vendorRegistration
 );
+// userRouter.post('/migrate', inserLoclToOnline);
 
 export default userRouter;
