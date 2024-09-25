@@ -58,7 +58,7 @@ function CartCard(props) {
             >
               {' '}
               <img
-                src={item?.imgs[0]}
+                src={item?.imgs[0]?.url}
                 alt=""
                 style={{
                   width: '100%',

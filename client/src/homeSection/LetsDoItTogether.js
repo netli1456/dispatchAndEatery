@@ -2,9 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/esm/Button';
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-function LetsDoItTogether() {
+function LetsDoItTogether(props) {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const {setVendorRegistrationOpen}=props
+  const {userInfo} = useSelector((state)=> state.user)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -17,6 +22,10 @@ function LetsDoItTogether() {
       window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
+
+  const handleVendorRegistration = () => {
+    navigate(`/profile/${userInfo?.user?._id}?openUpload=true`); 
+  };
 
   return (
     <div style={{ width: '100%' }} className=" my-5 ">
@@ -57,7 +66,7 @@ function LetsDoItTogether() {
                 20% bonus of your monthly sales.{' '}
               </strong>
               <div>
-                <Button variant="danger" className="text-white fw-bold my-3">
+                <Button onClick={handleVendorRegistration} variant="danger" className="text-white fw-bold my-3">
                   Food vendor registration
                 </Button>
               </div>
@@ -75,7 +84,7 @@ function LetsDoItTogether() {
               </strong>
               <div>
                 {' '}
-                <Button className="fw-bold mt-3">
+                <Button onClick={()=>setVendorRegistrationOpen(true)} className="fw-bold mt-3">
                   Dispatch rider registration
                 </Button>
               </div>

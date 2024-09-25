@@ -39,6 +39,7 @@ export const checkingLoggedInDevices = async ({
       } else {
         existingDevice.ip = devices.ip;
         existingDevice.location = devices.location;
+        existingDevice.otpCreatedAt = Date.now();
         existingDevice.otp = await sendVerificationEmail({
           user,
           text,
@@ -46,7 +47,7 @@ export const checkingLoggedInDevices = async ({
           warning,
           res,
         });
-        
+
         await loggedIndevices.save();
         return true;
       }
@@ -57,6 +58,7 @@ export const checkingLoggedInDevices = async ({
         ip: devices.ip,
         location: devices.location,
         browser: devices.browser,
+        otpCreatedAt: Date.now(),
         otp: await sendVerificationEmail({ user, text, subject, warning, res }),
       });
 
@@ -72,6 +74,7 @@ export const checkingLoggedInDevices = async ({
         ip: devices.ip,
         location: devices.location,
         browser: devices.browser,
+        otpCreatedAt: Date.now(),
         otp: !creation
           ? await sendVerificationEmail({ user, text, subject, warning })
           : creation,
@@ -97,10 +100,10 @@ export const sendToken = ({ user, res }) => {
 };
 
 export const checkOtpexpiration = ({ user, otpCode, res }) => {
-
   if (!otpCode || user.otpIsVerified) {
     return res.status(400).json({ message: 'Invalid request' });
   }
+
   const otpValid = bcrypt.compareSync(otpCode, user.otp);
 
   if (!otpValid) {
@@ -108,33 +111,28 @@ export const checkOtpexpiration = ({ user, otpCode, res }) => {
   }
 
   const otpAge = Date.now() - user.otpCreatedAt.getTime();
+
   const otpExpiry = 100 * 60 * 1000;
 
   if (otpAge > otpExpiry) {
+    
     return res.status(403).json({ message: 'OTP has expired' });
   }
-
   user.otpIsVerified = true;
   user.otp = !user.fingerprint ? undefined : user.otp;
   user.otpCreatedAt = !user.fingerprint ? undefined : user.otpCreatedAt;
 };
 
 export const checkIfCurrentDeviceMatchAnyInDb = ({ newloginDetails, req }) => {
-  const tryingToLogIndevice = deviceCheck(req);
-
   const fingerprint = req.body.fingerprint
     ? req.body.fingerprint
     : req.params.fingerprint;
 
-
   const verifyDevice = newloginDetails.devices.find(
-    (device) =>
-      device.fingerprint === fingerprint &&
-      device.ip === tryingToLogIndevice.ip &&
-      device.browser === tryingToLogIndevice.browser &&
-      device.location === tryingToLogIndevice.location
+    (device) => device.fingerprint === fingerprint
   );
-  return verifyDevice;
+
+  return verifyDevice; 
 };
 
 export const findDeviceByUserId = async ({ req, user, res }) => {
@@ -148,7 +146,7 @@ export const findDeviceByUserId = async ({ req, user, res }) => {
     fingerprint: req.body.fingerprint,
   });
   if (!sentResetOtp) {
-    return res.status(401).json({ message: 'expired' });
+    return res.status(401).json({ message: 'session expired' });
   }
 
   const otpExpireResult = checkOtpexpiration({

@@ -67,19 +67,19 @@ function ProductDetails(props) {
           />
         </div>
         <div className="d-flex my-2 gap-2 justify-content-center">
-          {product?.imgs?.map((item, index) => (
-            <Link key={index} style={{ maxWidth: '50px', height: '50px' }}>
+          {product?.imgs?.map((item) => (
+            <Link key={item.imgId} style={{ maxWidth: '50px', height: '50px' }}>
               {' '}
               <img
-                src={item}
+                src={item?.url}
                 alt=""
                 style={{
                   maxWidth: '50px',
                   height: '50px',
                 }}
-                onClick={() => setCurrentImage(item)}
+                onClick={() => setCurrentImage(item?.url)}
                 className={
-                  product?.imgs && currentImage === item
+                  product?.imgs && currentImage === item.url
                     ? 'border rounded border-success p-1'
                     : ''
                 }
@@ -89,7 +89,7 @@ function ProductDetails(props) {
         </div>
 
         <div
-          style={{ width: 'fit-content' }}
+          style={{width:'fit-content', minWidth: '60%' }}
           className="bg-success d-flex flex-column my-3  p-2 text-white rounded text-capitalize bg-opacity-"
         >
           <strong className="fs-5 fw-bold">

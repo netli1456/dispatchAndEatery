@@ -72,7 +72,7 @@ function LocationPage(props) {
         const response = await axios.get(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
             normalizedQuery
-          )}`
+          )}`,  { withCredentials: true }
         );
         const formattedSuggestions = response.data.map((suggestion) => {
           const addressParts = suggestion.display_name.split(',');

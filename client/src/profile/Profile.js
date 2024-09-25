@@ -17,6 +17,8 @@ import Button from 'react-bootstrap/esm/Button';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import DoNotDisturbOffIcon from '@mui/icons-material/DoNotDisturbOff';
+import UploadProduct from '../upload/UploadProduct';
+import VendorRegistration from '../component/VendorRegistration';
 
 const Profile = () => {
   const [data, setData] = useState([]);
@@ -53,7 +55,7 @@ const Profile = () => {
 
       const result = await fp.get();
       const fingerprint = result.visitorId;
-     
+
       if (fingerprint) {
         try {
           const { data } = await axios.get(
@@ -62,6 +64,7 @@ const Profile = () => {
           setData(data);
           setLoading(false);
           setCounts(data?.counts);
+          console.log(data);
         } catch (error) {
           toast.error(error?.response?.data?.message, {
             toastId: 'unique_toast_id',
@@ -113,7 +116,7 @@ const Profile = () => {
   useEffect(() => {
     if (error) {
       const handleLogOut = async () => {
-         await axios.post(`${api}/api/users/logout`);
+        await axios.post(`${api}/api/users/logout`);
         navigate('/signin');
         dispatch(clearUserInfo());
       };
@@ -121,8 +124,16 @@ const Profile = () => {
     }
   }, [navigate, dispatch, error]);
 
+  const [uploadOpen, setUploadOpen] = useState(false);
+
   return (
-    <div style={{ width: '100%', overflowX: 'hidden' }}>
+    <div
+      style={{
+        width: '100%',
+        overflowX: 'hidden',
+        position: uploadOpen ? 'relative' : '',
+      }}
+    >
       <Container>
         <ProfileHeader
           userInfo={userInfo}
@@ -135,6 +146,8 @@ const Profile = () => {
           setOpenWallet={setOpenWallet}
           arl={arl}
           loading={loading}
+          isBusinessOwner={data?.isBusinessOwner}
+          setUploadOpen={setUploadOpen}
         />
 
         <SearchBar />
@@ -313,6 +326,26 @@ const Profile = () => {
           )}
         </div>
       </Container>
+      {uploadOpen === 'upload' && (
+        <div
+          className="upload"
+          style={{ position: 'absolute', top: 0, width: '100%' }}
+        >
+          <UploadProduct
+            businessName={data?.businessName}
+            businessImg={data?.businessImg}
+            setUploadOpen={setUploadOpen}
+          />
+        </div>
+      )}
+      {uploadOpen === 'vendor' && (
+        <div
+          className="upload"
+          style={{ position: 'absolute', top: 0, width: '100%' }}
+        >
+          <VendorRegistration setUploadOpen={setUploadOpen} />
+        </div>
+      )}
       <Footer />
     </div>
   );

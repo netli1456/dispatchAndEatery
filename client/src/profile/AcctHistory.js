@@ -33,12 +33,12 @@ function AcctHistory(props) {
                     ? `-N${item?.amount?.toFixed(2)}`
                     : `+N${item?.amount?.toFixed(2)}`}{' '}
                   {item?.buyerId === userInfo?.user?._id
-                    ? `order -  ${
+                    ? `to  ${
                         item?.businessName?.length > 20
                           ? `${item?.businessName.slice(0, 20)}...`
                           : `${item?.businessName}`
                       } `
-                    : `received from ${
+                    : ` from ${
                         item?.buyerName?.length > 9
                           ? `${item?.buyerName?.slice(0, 7)}...`
                           : `${item?.buyerName}`

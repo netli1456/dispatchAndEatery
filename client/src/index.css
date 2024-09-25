@@ -94,9 +94,19 @@ body {
   cursor: pointer !important;
 }
 
-
-.shipBg{
+.shipBg {
   background-color: rgb(247, 251, 247) !important;
 }
 
+.borders {
+  border: 1px solid rgba(128, 128, 128, 0.785) !important;
+}
 
+.iconHover {
+  opacity: 0.6 !important;
+}
+
+.iconHover:hover {
+  opacity: 1 !important;
+  transition: 0.5 ease-in-out !important;
+}

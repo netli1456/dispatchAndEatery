@@ -65,8 +65,8 @@ export const authMiddleware = async (req, res, next) => {
       req,
     });
 
+
     if (!verifyDevice) {
-      console.error('Verification failed, switch off VPN if active');
 
       return res
         .status(401)

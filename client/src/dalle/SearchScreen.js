@@ -3,7 +3,6 @@ import Container from 'react-bootstrap/esm/Container';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import './mybite.css';
-import Navbar from '../navSection/Navbar';
 import Footer from '../footerSection/Footer';
 import SearchedItems from './SearchedItems';
 import SearchBar from '../component/SearchBar';
@@ -26,27 +25,58 @@ import SetMealIcon from '@mui/icons-material/SetMeal';
 import YoutubeSearchedForIcon from '@mui/icons-material/YoutubeSearchedFor';
 import { toast } from 'react-toastify';
 import LoadingBox from '../LoadingBox';
+import { pageSuccess, resetProducts, searchSuccess } from '../redux/searchSlice';
 
 function SearchScreen(props) {
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
   const query = sp.get('query') || '';
+  const initialPage = parseInt(sp.get('page')) || 1;
   const popularFilter = sp.get('popularFilter') || '';
   const rating = sp.get('rating') || '';
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const { searchedLocation } = useSelector((state) => state.searching);
-  const [page, setPage] = useState(1);
+  const { searchedLocation, searchproducts, pagecounts } = useSelector((state) => state.searching);
+  const [page, setPage] = useState(initialPage);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
   const { setOpenLocation } = props;
 
   const locationQuery = searchedLocation === undefined ? '' : searchedLocation;
 
-  const [products, setProducts] = useState([]);
   const location = useLocation();
 
   const dispatch = useDispatch();
+
+  const [isScrollingUp, setIsScrollingUp] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isSearchBarVisible, setIsSearchBarVisible] = useState(true);
+
+  
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY < lastScrollY) {
+      
+      setIsScrollingUp(true);
+      setIsSearchBarVisible(true); 
+    } else {
+     
+      setIsScrollingUp(false);
+      setIsSearchBarVisible(false); 
+    }
+
+    setLastScrollY(currentScrollY);
+  };
+
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
 
   useEffect(() => {
     if (location.pathname !== '/') {
@@ -56,8 +86,20 @@ function SearchScreen(props) {
           const { data } = await axios.get(
             `${api}/api/users/stores?searchedLocation=${locationQuery}&query=${query}&page=${page}&popularFilter=${popularFilter}&rating=${rating}`
           );
-          setProducts(data);
+
+          const { stores, totalPages } = data;
+
+          if (page === 1) {
+            
+            dispatch(resetProducts(stores));
+          } else {
+           
+            dispatch(searchSuccess([...stores])); 
+          }
+          dispatch(pageSuccess(totalPages));
           setLoading(false);
+
+         
         } catch (error) {
           toast.error('something went wrong, try again later', {
             autoClose: 3000,
@@ -84,10 +126,11 @@ function SearchScreen(props) {
   }, []);
 
   const handleFilter = (filterData) => {
-    if (filterData !== 'Near me') {
-      navigate(
-        `/search?searchedLocation=${locationQuery}&popularFilter=${filterData}`
-      );
+    setPage(1);
+    if (filterData === 'Rating') {
+      navigate(`/search?searchedLocation=${locationQuery}&query=${query}&rating=4`);
+    } else if (filterData !== 'Near me') {
+      navigate(`/search?searchedLocation=${locationQuery}&popularFilter=${filterData}`);
     } else {
       if (searchedLocation) {
         navigate(`/search?&searchedLocation=${searchedLocation}`);
@@ -96,16 +139,21 @@ function SearchScreen(props) {
       }
     }
   };
-  // const handleFilters = async () => {
-  //   // navigate(`/search?searchedLocation=${locationQuery}&&rating=${rate}`);
-  //   const { data } = await axios.post(`${api}/api/users/m`);
-  // };
 
+
+
+  const handleChangePage = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    navigate(
+      `/search?searchedLocation=${locationQuery}&query=${query}&page=${nextPage}&popularFilter=${popularFilter}&rating=${rating}`
+    );
+  };
   return (
     <div>
       <div
-        className=""
-        style={{ position: 'sticky', width: '100%', top: 50, zIndex: 8 }}
+         className={`search-bar-wrapper`}
+        style={{ position: 'sticky', width: '100%', top: isScrollingUp ? 50 : -100, zIndex: isScrollingUp ? 8 : 0 }}
       >
         {' '}
         <SearchBar />
@@ -124,8 +172,15 @@ function SearchScreen(props) {
         <Container className="mb-5">
           <Row className="my-3">
             <Col
-              md={isSmallScreen ? 12 : 3}
-              className={isSmallScreen ? 'mb-3 ' : 'scrollable-column'}
+              md={ 3}
+              style={{
+                position: isSmallScreen ? 'sticky' : 'fixed',
+                width: isSmallScreen ? '100%' : '250px',
+                top: isSmallScreen ? (isScrollingUp ? 160 : -70) : (isSearchBarVisible ? 160 : 70),
+                zIndex: isSmallScreen ? (isScrollingUp ? 8 : 0) : '',
+                backgroundColor: isScrollingUp ? 'white' : '',
+              }}
+              className={isSmallScreen ? 'mb-3 search-bar-wrapper' : ' search-bar-wrapper'}
             >
               <ListGroup
                 variant="flush"
@@ -134,7 +189,7 @@ function SearchScreen(props) {
                 <ListGroup.Item className={!isSmallScreen ? 'mb-3 ' : 'd-none'}>
                   <strong>Sort by:</strong>
                 </ListGroup.Item>
-                <ListGroup.Item 
+                <ListGroup.Item
                   onClick={() => handleFilter('Near me')}
                   className={!isSmallScreen ? 'mb-3 hovering ' : 'd-none'}
                 >
@@ -145,6 +200,8 @@ function SearchScreen(props) {
                 </ListGroup.Item>
                 <ListGroup.Item
                   className={!isSmallScreen ? 'mb-3 hovering' : 'd-none'}
+                  onClick={() => handleFilter('rating')}
+
                 >
                   {' '}
                   <span className="d-flex align-items-center gap-3">
@@ -230,7 +287,7 @@ function SearchScreen(props) {
                           ? 'd-flex align-items-center gap-2 hovering'
                           : 'd-flex flex-column align-items-center justify-content-center hovering p-2  rounded'
                       } ${popularFilter === 'local foods' ? 'active' : ''}`}
-                      onClick={() => handleFilter('local foods')}
+                      onClick={() => handleFilter('burger')}
                     >
                       <span className="text-success">
                         <LocalDiningIcon />
@@ -246,28 +303,42 @@ function SearchScreen(props) {
                 <ListGroup variant="flush" className="mt-3">
                   <ListGroup.Item
                     onClick={() => handleFilter('desert')}
-                    className={popularFilter === 'desert' ? 'active "d-flex align-items gap-3 hovering "' : '"d-flex align-items gap-3 hovering "'}
+                    className={
+                      popularFilter === 'desert'
+                        ? 'active "d-flex align-items gap-3 hovering "'
+                        : '"d-flex align-items gap-3 hovering "'
+                    }
                   >
                     <RiceBowlIcon className="text-success" /> Desert
                   </ListGroup.Item>
                   <ListGroup.Item
-                    onClick={() => handleFilter('ice cream')}
-                    className={popularFilter === 'ice cream' ? 'active d-flex align-items gap-3 hovering ' : 'd-flex align-items gap-3 hovering '}
+                    onClick={() => handleFilter('Ice cream')}
+                    className={
+                      popularFilter === 'ice cream'
+                        ? 'active d-flex align-items gap-3 hovering '
+                        : 'd-flex align-items gap-3 hovering '
+                    }
                   >
                     <IcecreamIcon className="text-success" />
                     Ice cream
                   </ListGroup.Item>
                   <ListGroup.Item
                     onClick={() => handleFilter('sea food')}
-                    className={popularFilter === 'sea food' ? 'active d-flex  gap-3 hovering ' : 'd-flex  gap-3 hovering '}
+                    className={
+                      popularFilter === 'sea food'
+                        ? 'active d-flex  gap-3 hovering '
+                        : 'd-flex  gap-3 hovering '
+                    }
                   >
                     <SetMealIcon className="text-success" /> sea foods
                   </ListGroup.Item>
                 </ListGroup>
               </div>
             </Col>
-            <Col className="scrollable-column" md={!isSmallScreen ? 9 : 12}>
-              {(query || popularFilter) && products?.length === 0 && (
+            <Col  style={{
+                marginLeft: isSmallScreen ? '0' : '250px',
+              }} className="scrollable-columnn" >
+              {(query || popularFilter) && searchproducts?.length === 0 && (
                 <div className="my-5">
                   <div className=" d-flex justify-content-center align-items-center flex-column">
                     <p className="fw-bold " style={{ height: '15vh' }}>
@@ -296,13 +367,13 @@ function SearchScreen(props) {
                 columnsCountBreakPoints={{ 350: 1, 765: 2, 900: 2 }}
               >
                 <Masonry gutter="10px">
-                  {products?.length > 0 &&
-                    products?.map((item, index) => (
+                  {searchproducts && searchproducts?.length > 0 &&
+                    searchproducts.map((item, index) => (
                       <Link
                         to={`/kitchen/${item?._id}`}
                         className="text-decoration-none kitchenHover border rounded  p-2 "
                         style={{ minHeight: '200px' }}
-                        key={`${index}-${item._id}`}
+                        key={`${index}-${item?._id}`}
                       >
                         {' '}
                         <SearchedItems item={item} />
@@ -312,17 +383,20 @@ function SearchScreen(props) {
               </ResponsiveMasonry>
             </Col>
           </Row>
-       
         </Container>
       )}
 
-      {!loading &&
-        products?.length >
-          0 &&(
-            <div className="navigation-button">
-              <Button className="button1">see more</Button>
-            </div>
-          )}
+      {!loading && page !== pagecounts && (
+        <div className="navigation-button">
+          <Button
+            disabled={page === pagecounts}
+            onClick={handleChangePage}
+            className="button1"
+          >
+            see more
+          </Button>
+        </div>
+      )}
       <Footer />
     </div>
   );

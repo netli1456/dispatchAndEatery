@@ -14,6 +14,8 @@ const devices = new mongoose.Schema({
       otpCreatedAt: { type: Date, default: Date.now() },
     },
   ],
+}, {
+  timestamps: true
 });
 
 const Device = mongoose.model('Device', devices);

@@ -157,7 +157,7 @@ p {
 
 
 .scrollable-column {
-  max-height: 80vh; 
+  max-height: 100vh; 
   overflow-y: auto;
   position:sticky;
   top:120
@@ -174,4 +174,18 @@ p {
 
 .scrollable-column::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+
+.search-bar-wrapper {
+ 
+  transition: top 0.3s ease-in-out; 
+}
+
+.search-bar-wrapper.hidden {
+  top: -100px; 
+}
+
+.search-bar-wrapper.visible {
+  top: 0; /* Shows the search bar */
 }

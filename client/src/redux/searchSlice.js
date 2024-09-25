@@ -4,23 +4,47 @@ export const searchSlice = createSlice({
   name: 'searchproducts',
   initialState: {
     searchproducts: [],
-    searchedLocation: '',
+    searchedLocation: '', 
+    pagecounts: 0, 
   },
   reducers: {
     searchSuccess: (state, action) => {
-      state.searchproducts = action.payload;
-      
-    
-      
+      const newProduct = action.payload;
+
+      newProduct.forEach((newp) => {
+        const existProduct = state.searchproducts.find(
+          (p) => p._id === newp._id
+        );
+
+        if (!existProduct) {
+          state.searchproducts.push(newp);
+        }
+      });
     },
-    searchAddress:(state, action) => {
+    resetProducts: (state, action) => {
+      // Reset the product list with new data (e.g., on new search)
+      state.searchproducts = action.payload;
+    },
+    searchAddress: (state, action) => {
+      // Update the searched location
       state.searchedLocation = action.payload;
     },
     clearLocation: (state) => {
+      // Clear the location field
       state.searchedLocation = '';
+    },
+    pageSuccess: (state, action) => {
+      // Update total pages available
+      state.pagecounts = action.payload;
     },
   },
 });
 
-export const { searchSuccess, searchAddress, clearLocation } = searchSlice.actions;
+export const {
+  searchSuccess,
+  resetProducts,
+  searchAddress,
+  clearLocation,
+  pageSuccess,
+} = searchSlice.actions;
 export default searchSlice.reducer;

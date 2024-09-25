@@ -57,9 +57,10 @@ function Navbar(props) {
     setOpenNow();
   };
 
+  
 
   return (
-    <div className="bg-success py-2" style={{ width: '100%' }}>
+    <div className="bg-success py-2" style={{ width: '100%',  }}>
       <Container className="text-white py-1 d-flex justify-content-between align-items-center">
         <div className="d-flex gap-3 align-items-center navbarIcon px-2">
           <MenuIcon className="fs-2 fw-bold" />
@@ -134,7 +135,7 @@ function Navbar(props) {
                   <ListGroup.Item>
                     <Link
                       to={`/profile/${userInfo?.user?._id}`}
-                      className="text-decoration-none text-success fw-bold d-flex flex-column align-items-center px-3"
+                      className={location.pathname === `${`/profile/${userInfo?.user?._id}`}` ?  `bg-success d-flex flex-column align-items-center text-decoration-none text-white fw-bold`: `d-flex flex-column align-items-center text-decoration-none text-success fw-bold` }
                       onClick={() => toggle()}
                     >
                       Account
@@ -147,7 +148,16 @@ function Navbar(props) {
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Link
-                      className="d-flex flex-column align-items-center text-decoration-none text-success fw-bold pb-5"
+                      className={location.pathname === `${`/kitchen/${userInfo.user._id}`}` ?  `bg-success d-flex flex-column align-items-center text-decoration-none text-white fw-bold`: `d-flex flex-column align-items-center text-decoration-none text-success fw-bold` }
+                      to={`/kitchen/${userInfo?.user?._id}`}
+                      onClick={() => toggle()}
+                    >
+                      My Store
+                    </Link>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Link
+                      className="d-flex flex-column align-items-center text-decoration-none text-success fw-bold pb-3"
                       onClick={handleLogOut}
                     >
                       LogOut

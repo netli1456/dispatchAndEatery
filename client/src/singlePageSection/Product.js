@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { api } from '../utils/apiConfig';
 import Recommended from '../recommended/Recommended';
 import LoadingBox from '../LoadingBox';
-
+import Error from '../utils/Error';
 
 function Product() {
   const params = useParams();
@@ -22,28 +22,30 @@ function Product() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { cartItems } = useSelector((state) => state.cart);
   const [currentImage, setCurrentImage] = useState(null);
-  const [availableProduct, setAvailableProduct]=useState([])
+  const [availableProduct, setAvailableProduct] = useState([]);
+  const [error, setError] = useState(false);
 
-  const location = useLocation()
+  const location = useLocation();
 
   useEffect(() => {
     const productHandler = async () => {
       setLoadings(true);
+      setError(false);
       try {
         const { data } = await axios.get(`${api}/api/products/find/${id}`);
         setProduct(data);
         setLoadings(false);
         if (data.imgs) {
-          setCurrentImage(data.imgs[0]);
+          setCurrentImage(data.imgs[0].url);
         }
       } catch (error) {
         console.log(error);
         setLoadings(false);
+        setError(true);
       }
     };
     productHandler();
   }, [id]);
-
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -56,10 +58,6 @@ function Product() {
       window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
-
-  
-
-
 
   useEffect(() => {
     const relatedProducts = async () => {
@@ -79,21 +77,23 @@ function Product() {
     }
   }, [cartItems, product, location]);
 
-
-
   return (
     <div>
-      
-
       {loadings ? (
-        <div style={{ height: '70vh', overflow: 'hidden', width:"95vw", margin:"auto" }}>
+        <div
+          style={{
+            height: '70vh',
+            overflow: 'hidden',
+            width: '95vw',
+            margin: 'auto',
+          }}
+        >
           <LoadingBox />
         </div>
+      ) : error ? (
+        <Error />
       ) : (
         <div style={{ overflowX: 'hidden' }}>
-
-
-
           <div>
             <div
               style={{
@@ -138,21 +138,18 @@ function Product() {
             </div>
 
             <div className="border boder-danger">
-           
               <Recommended
-                availableProduct={availableProduct} id={product?.userId}
+                availableProduct={availableProduct}
+                id={product?.userId}
               />
-            
             </div>
-          
 
             <Footer />
           </div>
         </div>
       )}
-    </div>)
+    </div>
+  );
 }
- 
-
 
 export default Product;

@@ -10,7 +10,7 @@ function Cards({ item }) {
         <div className="cardBox" >
          
             <img
-              src={item?.imgs[0]}
+              src={item?.imgs[0]?.url}
               alt={''}
               style={{
                 width: '100%',

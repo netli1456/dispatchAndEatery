@@ -99,6 +99,8 @@ function Cart() {
     }
   };
 
+  console.log(cartItems)
+
   useEffect(() => {
     if (order._id) {
       navigate(`/order/${order?._id}`);

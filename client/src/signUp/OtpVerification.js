@@ -8,9 +8,10 @@ import axios from 'axios';
 import { api } from '../utils/apiConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCount, fetchSuccess, updateCountDown } from '../redux/userSlice';
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Spinners from '../utils/Spinner';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 function OtpVerification() {
   const [loading, setLoading] = useState(false);
@@ -22,11 +23,15 @@ function OtpVerification() {
   const handleVerification = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const fp = await FingerprintJS.load();
 
+    const result = await fp.get();
+    const fingerprints = result.visitorId;
     try {
       const { data } = await axios.post(`${api}/api/users/verification`, {
         email: userInfo?.user?.email || userInfo.email,
         otpCode: otp,
+        forTokenFingerPrint: fingerprints,
         fingerprint: userInfo?.user?.rdt || userInfo?.rdt,
         resetPasswordOtp:
           userInfo?.user.resetPasswordOtp || userInfo.resetPasswordOtp,
@@ -155,7 +160,7 @@ function OtpVerification() {
                 onSubmit={handleVerification}
               >
                 <input
-                  type="text"
+                  type="tel"
                   className="rounded border-success fw-bold text-center"
                   maxLength="6"
                   size="20"

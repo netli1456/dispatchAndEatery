@@ -1,17 +1,40 @@
 import Product from '../models/Product.js';
 import User from '../models/userModel.js';
 
+
+
+
 export const postProduct = async (req, res) => {
   try {
-    const { userId } = req.query;
-    const user = await User.findById(userId);
-    if (user.businessName !== '') {
-      const product = new Product({ ...req.body, userId: user._id });
-      await product.save();
-      res.status(200).json(product);
-    } else {
-      res.status(401).json({ message: 'not authorized' });
+    const userId = req.query.userId;
+
+    let imgs = [];
+
+    const user = await User.findById(userId.toString());
+    if (!user) return res.status(404).json({ message: 'user not found' });
+
+    if (user.isBusinessOwner === false) {
+      return res.status(401).json({ message: 'unauthorized' });
     }
+
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const eachImage = {
+          url: file.path,
+          imgId: file.filename,
+        };
+
+        imgs.push(eachImage);
+      }
+    }
+
+    const product = new Product({
+      ...req.body,
+      userId: user._id,
+      imgs: imgs,
+    });
+      await product.save();
+    res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -51,7 +74,7 @@ export const singleProduct = async (req, res) => {
 export const getProducts = async (req, res) => {
   const fetchedProductIds = new Set();
   try {
-    const { price, category, query, page = 1, pageSize = 10 } = req.query;
+    const { price, category, query, page = 1, pageSize = 12 } = req.query;
 
     const skip = (page - 1) * pageSize;
 

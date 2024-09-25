@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import HomePage from './homeSection/HomePage';
 import Product from './singlePageSection/Product';
@@ -19,12 +19,12 @@ import { useOpen } from './utils/isOpenState';
 import axios from 'axios';
 import EmailOtpForPassword from './signIn/EmailOtpForPassword';
 import ChangePassword from './signIn/ChangePassword';
-
+import Error from './utils/Error';
+import VendorRegistration from './component/VendorRegistration';
 
 function App() {
   const { isOpen, toggle } = useOpen();
   axios.defaults.withCredentials = true;
-  
 
   return (
     <BrowserRouter>
@@ -36,7 +36,7 @@ function App() {
           overflow: isOpen ? 'hidden' : '',
         }}
       >
-        <div style={{ position: 'sticky', width: '', top: 0, zIndex: 9 }}>
+        <div style={{ position: 'sticky', width: '', top: 0, zIndex: 99999 }}>
           {' '}
           <Navbar openNow={isOpen} setOpenNow={toggle} />
         </div>
@@ -58,6 +58,7 @@ function App() {
               position: 'absolute',
               top: 0,
               height: '100vh',
+              zIndex:999999999999
             }}
             className=" d-flex justify-content-center align-items-center locationBg"
           >
@@ -69,6 +70,7 @@ function App() {
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/kitchen/:id" element={<Kitchen />} />
+          <Route path="/vendor" element={<VendorRegistration />} />
           <Route
             path="/search"
             element={<SearchScreen setOpenLocation={toggle} />}
@@ -88,6 +90,7 @@ function App() {
             path="/newpassword/change/:urlf/change"
             element={<ChangePassword />}
           />
+          <Route path="*" element={<Error />} />
         </Routes>
       </div>
     </BrowserRouter>

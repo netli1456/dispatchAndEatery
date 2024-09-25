@@ -67,7 +67,6 @@ function Kitchen() {
         const { data } = await axios.get(
           `${api}/api/products/kitchen/${id}?query=${query}&page=${page}&price=${price}&category=${category}`
         );
-
         setKitchenData(data);
         setLoading(false);
       } catch (error) {
@@ -111,7 +110,7 @@ function Kitchen() {
       }
     } else {
       toast.warning(
-        'You can only add items from one store at a time. you already have an item from another store in your cart. ',
+        'You can only add items from one store. you already have an item from another store in your cart. ',
         {
           autoClose: false,
           theme: 'dark',
@@ -323,7 +322,7 @@ function Kitchen() {
                                     : 'd-flex flex-column'
                                 }
                               >
-                                <ListGroup.Item c>
+                                <ListGroup.Item >
                                   <strong>Price Range: </strong>
                                   <div className="d-flex fw-bold gap-1 align-items-center">
                                     <span>0</span>
@@ -410,9 +409,10 @@ function Kitchen() {
                         }}
                       >
                         <Masonry gutter="10px">
+                        <div></div>
                           {(loading
                             ? Array.from(new Array(9))
-                            : kitchenData?.products
+                            : kitchenData.products && kitchenData?.products
                           )?.map((item, index) => (
                             <div key={index}>
                               {item ? (

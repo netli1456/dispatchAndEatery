@@ -20,7 +20,7 @@ export const CreateOrder = async (req, res) => {
             return {
               name: item.name,
               price: item.price,
-              imgs: item.imgs,
+              imgs: item.imgs.map((img) => img.url),
               quantity: item.quantity,
               productId: item._id,
               category: item.category,
@@ -94,6 +94,7 @@ export const orderedItems = async (req, res) => {
     switch (query) {
       case 'pending':
         searchConditions.isPaid = false;
+        searchConditions.isCancelled = false;
         break;
       case 'delivered':
         searchConditions.isDelivered = true;
@@ -104,6 +105,7 @@ export const orderedItems = async (req, res) => {
         break;
       case 'dispatched':
         searchConditions.isTaken = { $exists: true };
+        searchConditions.isCancelled = false;
         break;
       default:
         break;
@@ -143,6 +145,7 @@ export const orderedItems = async (req, res) => {
         pending: await Order.countDocuments({
           $or: [{ businessId: id }, { buyerId: id }],
           isPaid: false,
+          isCancelled: false,
         }),
         delivered: await Order.countDocuments({
           $or: [{ businessId: id }, { buyerId: id }],
@@ -156,15 +159,21 @@ export const orderedItems = async (req, res) => {
         dispatched: await Order.countDocuments({
           $or: [{ businessId: id }, { buyerId: id }],
           isTaken: { $exists: true },
+          isCancelled: false,
         }),
         all: await Order.countDocuments({
           $or: [{ businessId: id }, { buyerId: id }],
         }),
       };
 
-      res
-        .status(200)
-        .json({ orders: orders, bal: isBusinessId.balance, counts });
+      res.status(200).json({
+        orders: orders,
+        bal: isBusinessId.balance,
+        counts,
+        isBusinessOwner: isBusinessId.isBusinessOwner,
+        businessImg: isBusinessId.businessImg,
+        businessName: isBusinessId.businessName,
+      });
     } else {
       res.status(404).json({ message: 'User not found' });
     }

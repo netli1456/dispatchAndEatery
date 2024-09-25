@@ -21,7 +21,6 @@ export const userRegister = async (req, res) => {
   const saltRounds = 10;
 
   try {
-    
     let user = {};
     const device = deviceCheck(req);
     const emailMessage = emailText(device);
@@ -32,7 +31,7 @@ export const userRegister = async (req, res) => {
       if (userExist.otpIsVerified) {
         return res.status(402).json({ message: 'email has already been used' });
       } else {
-
+        userExist.otpCreatedAt = Date.now();
         userExist.otp = await sendVerificationEmail({
           user: userExist,
           text: emailMessage.newUserText,
@@ -40,6 +39,7 @@ export const userRegister = async (req, res) => {
           warning: emailMessage.newUserWarning,
           res,
         });
+
         user = userExist;
       }
     } else {
@@ -68,7 +68,7 @@ export const userRegister = async (req, res) => {
 
     const userData = {
       email: user.email,
-      fingerprint:req.body.fingerprint,
+      fingerprint: req.body.fingerprint,
       url:
         user.surname +
         (user.createdAt ? user.createdAt.toISOString() : '') +
@@ -76,14 +76,15 @@ export const userRegister = async (req, res) => {
         (user.otpCreatedAt ? user.otpCreatedAt.toISOString() : '') +
         user.firstname,
     };
-    res.status(200).json({user:userData});
+    res.status(200).json({ user: userData });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 export const verifyOtp = async (req, res) => {
-  const { otpCode, resetPasswordOtp } = req.body;
+  const { otpCode, resetPasswordOtp, forTokenFingerPrint } = req.body;
+
   try {
     let user = {};
 
@@ -95,8 +96,8 @@ export const verifyOtp = async (req, res) => {
       user = sentResetOtpUser;
       const userData = {
         email: user.email,
-        name:`${user.firstname } ${ user.surname}`,
-        img:user.img,
+        name: `${user.firstname} ${user.surname}`,
+        img: user.img,
         urlf:
           user.surname +
           (user.createdAt ? user.createdAt.toISOString() : '') +
@@ -147,7 +148,6 @@ export const verifyOtp = async (req, res) => {
         user = newLoginUser;
       } else {
         const createdUser = await User.findOne({ email: req.body.email });
-
         if (!createdUser) {
           return res.status(404).json({ message: 'User not found' });
         }
@@ -155,14 +155,16 @@ export const verifyOtp = async (req, res) => {
           otpCode,
           user: createdUser,
         });
+
         if (otpExpireResult) {
           return;
         }
         await createdUser.save();
+
         user = createdUser;
       }
 
-      sendToken({ user, res, fingerprint: req.body.fingerprint });
+      sendToken({ user, res, fingerprint: forTokenFingerPrint });
 
       const userDetails = {
         firstname: user.firstname,
@@ -273,7 +275,7 @@ export const userLogin = async (req, res) => {
 
     const device = deviceCheck(req);
     const emailMessage = emailText(device);
-    
+
     if (!user.otpIsVerified) {
       user.otp = await sendVerificationEmail({
         user,
@@ -282,6 +284,7 @@ export const userLogin = async (req, res) => {
         warning: emailMessage.newUserWarning,
         res,
       });
+      user.otpCreatedAt = Date.now();
       await user.save();
 
       await checkingLoggedInDevices({
@@ -330,7 +333,7 @@ export const logOut = (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: 'None',
-    expires: new Date(0), // Expire the cookie immediately
+    expires: new Date(0),
   });
   res.status(200).json({ message: 'Logged out successfully' });
 };
@@ -362,7 +365,7 @@ export const passwordChange = async (req, res) => {
 
     const userDetails = {
       email: user.email,
-    
+
       url:
         user.surname +
         (user.createdAt ? user.createdAt.toISOString() : '') +
@@ -579,10 +582,10 @@ export const gettingKitchenByLocation = async (req, res) => {
 
     if (query) {
       const RegisteredKitchens = await User.exists({
+        isBusinessOwner: true,
         $or: [
           { physicalAddress: { $regex: query, $options: 'i' } },
-          { state: { $regex: query, $options: 'i' } },
-          { lga: { $regex: query, $options: 'i' } },
+
           { placesCanDeliverTo: { $regex: query, $options: 'i' } },
         ],
       });
@@ -607,7 +610,7 @@ export const getStores = async (req, res) => {
       rating,
       popularFilter,
       page,
-      pageSize = 16,
+      pageSize = 12,
       searchedLocation,
     } = req.query;
 
@@ -619,23 +622,136 @@ export const getStores = async (req, res) => {
       suspended: false,
     };
 
-    if (searchedLocation) {
-      searchConditions.$or = [
-        { lga: { $regex: searchedLocation, $options: 'i' } },
-        { state: { $regex: searchedLocation, $options: 'i' } },
-        { country: { $regex: searchedLocation, $options: 'i' } },
-        { physicalAddress: { $regex: searchedLocation, $options: 'i' } },
-      ];
-    }
+    let storesQuery = User.find(searchConditions);
+
     if (query) {
-      searchConditions.$or = [
-        { businessName: { $regex: query, $options: 'i' } },
-      ];
+      // If a query is provided, prioritize it
+      storesQuery = storesQuery.or([{ businessName: { $regex: query, $options: 'i' } }]);
     }
 
-    const stores = await User.find(searchConditions);
+    // if (searchedLocation) {
+    //   // If a searched location is provided, apply it to the query
+    //   storesQuery.or([
+    //     { physicalAddress: { $regex: searchedLocation, $options: 'i' } },
+    //     { placesCanDeliverTo: { $regex: searchedLocation, $options: 'i' } },
+    //   ]);
+    // }
 
-    if (!stores) return;
+    // Execute the query to get stores
+   
+
+
+
+
+
+
+    
+    // if (query) {
+    //   searchConditions.$or = [
+    //     { businessName: { $regex: query, $options: 'i' } },
+    //   ];
+    // }
+
+    // const popularStorsStored = [];
+   
+    // const noduplicateId = new Set();
+   
+   
+
+    if (searchedLocation) {
+      if (query) {
+        storesQuery.or( [
+          { businessName: { $regex: query, $options: 'i' } },
+        ]);
+       
+      } else if (rating) {
+        filteredStores.sort({ rating: -1 });
+        const result = await User.find(searchConditions)
+        stores =result
+      } else if (popularFilter) {
+        
+        const products = await Product.find({
+          $or: [
+            { type: { $regex: popularFilter, $options: 'i' } },
+            { category: { $regex: popularFilter, $options: 'i' } },
+            { name: { $regex: popularFilter, $options: 'i' } },
+          ],
+        });
+
+        if (products.length > 0) {
+          for (const product of products) {
+            storesQuery.or({
+              _id: product.userId.toString(),
+              $or: [
+                { physicalAddress: { $regex: searchedLocation, $options: 'i' } },
+                {
+                  placesCanDeliverTo: {
+                    $regex: searchedLocation,
+                    $options: 'i',
+                  },
+                },
+              ],
+            });
+            // if (
+            //   popularstores &&
+            //   !noduplicateId.has(popularstores._id.toString())
+            // ) {
+            //   popularStorsStored.push(popularstores);
+            //   noduplicateId.add(popularstores._id.toString());
+            // }
+          }
+        }
+
+        // stores = popularStorsStored;
+      } else {
+        storesQuery.or([
+          { physicalAddress: { $regex: searchedLocation, $options: 'i' } },
+          { placesCanDeliverTo: { $regex: searchedLocation, $options: 'i' } },
+        ]);
+      }
+     
+    }
+
+  
+
+  
+
+    if (popularFilter) {
+
+      const products = await Product.find({
+        $or: [
+          { type: { $regex: popularFilter, $options: 'i' } },
+          { category: { $regex: popularFilter, $options: 'i' } },
+          { name: { $regex: popularFilter, $options: 'i' } },
+        ],
+      });
+
+      if (products.length > 0) {
+        for (const product of products) {
+          storesQuery.or({_id:product.userId.toString()});
+          // if (
+          //   popularstores &&
+          //   !noduplicateId.has(popularstores._id.toString())
+          // ) {
+          //   popularStorsStored.push(popularstores);
+          //   noduplicateId.add(popularstores._id.toString());
+          // }
+        }
+      }
+
+     
+    }
+    if (storesQuery.length === 0)
+      return res.status(200).json({ message: 'no stores found' });
+    let stores = await storesQuery;
+
+    if(!stores) return res.status(404).json({ message:'No stores found'})
+
+    // Apply rating filtering if provided
+    if (rating) {
+      stores = stores.filter(store => store.rating >= ratingNumber);
+    }
+    
 
     let filteredStores = stores.map((store) => ({
       businessName: store.businessName,
@@ -649,43 +765,14 @@ export const getStores = async (req, res) => {
       timeOpen: store.timeOpen,
     }));
 
-    if (ratingNumber !== null) {
-      searchConditions.$or[
-        ({ physicalAddress: { $regex: searchedLocation, $options: 'i' } },
-        { lga: { $regex: searchedLocation, $options: 'i' } },
-        { state: { $regex: searchedLocation, $options: 'i' } },
-        { country: { $regex: searchedLocation, $options: 'i' } })
-      ],
-        filteredStores.sort((a, b) => b.rating - a.rating);
-    } else {
-      filteredStores.sort((a, b) => b.rating - a.rating);
-    }
+    console.log('query', query);
 
-    if (popularFilter) {
-      const storesWithPopularProducts = [];
-      const noduplicateId = new Set();
+    console.log(stores);
 
-      for (const store of stores) {
-        const products = await Product.find({
-          userId: store._id.toString(),
-          $or: [
-            { type: { $regex: popularFilter, $options: 'i' } },
-            { category: { $regex: popularFilter, $options: 'i' } },
-            { name: { $regex: popularFilter, $options: 'i' } },
-            { desc: { $regex: popularFilter, $options: 'i' } },
-          ],
-        });
+    // if (rating) {
 
-        if (products.length > 0) {
-          const productsUserId = products.map((product) => product.userId);
-          if (store._id.toString() === productsUserId.toString()) {
-            storesWithPopularProducts.push(store);
-            noduplicateId.add(store._id.toString());
-          }
-        }
-      }
-      filteredStores = storesWithPopularProducts;
-    }
+    //   filteredStores.sort({ rating: -1 });
+    // }
 
     const startIndex = (page - 1) * parseInt(pageSize);
     const endIndex = startIndex + parseInt(pageSize);
@@ -700,9 +787,46 @@ export const getStores = async (req, res) => {
     };
 
     shuffleArray(paginatedStores);
+    const totalPages = Math.ceil(filteredStores.length / parseInt(pageSize));
 
-    res.status(200).json(paginatedStores);
+    const productAndDetails = {
+      stores: paginatedStores,
+      totalPages: totalPages,
+    };
+    res.status(200).json(productAndDetails);
   } catch (error) {
-    res.status(500).json({ message: 'something went wrong' });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//VENDOR REGISTRATION
+
+export const vendorRegistration = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId.toString());
+
+    if (!user || !user.otpIsVerified) {
+      return res
+        .status(404)
+        .json({ message: 'you must be a user to register' });
+    }
+    if (user.isBusinessOwner)
+      return res.status(200).json({ message: ' already a registered vendor' });
+    if (req.file) {
+      user.businessImg = req.file.path;
+    }
+
+    user.isBusinessOwner = true;
+    user.physicalAddress = req.body.physicalAddress;
+    user.placesCanDeliverTo = req.body.placesCanDeliverTo;
+    user.businessName = req.body.businessName;
+
+    await user.save();
+
+    res.status(200).json({ message: 'successfully registered' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error.message);
   }
 };

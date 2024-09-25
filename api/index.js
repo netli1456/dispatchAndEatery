@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'https://mbitee.onrender.com',
+    origin: 'http://localhost:3000',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -33,12 +33,15 @@ app.use(
     optionsSuccessStatus: 204,
   })
 );
+
+
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
 app.use('/api/reviews', reviewRouter);
 app.use('/api/orders', OrderRouter);
 app.use('/api/payment', flutterRouter);
 app.use('/api/transactions/:fingerprint', authMiddleware, transactionRouter);
+
 
 const port = process.env.PORT;
 mongoose

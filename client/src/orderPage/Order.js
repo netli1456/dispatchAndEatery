@@ -18,7 +18,6 @@ import { Box, Skeleton } from '@mui/material';
 import Error from '../utils/Error';
 import LoadingBox from '../LoadingBox';
 
-
 function Order() {
   const params = useParams();
   const { id } = params;
@@ -27,15 +26,17 @@ function Order() {
   const [smallScreen, setSmallScreen] = useState(false);
   const [cancelWarning, setCancelWarning] = useState(false);
   const [loading, setLoading] = useState('page' || false);
+  const [error, setError] = useState(false);
 
   const navigate = useNavigate();
   const fingerprint = useFingerprint();
 
   useEffect(() => {
     const handleOrder = async () => {
-      setLoading(true);
-   
+     if(fingerprint){
       try {
+        setLoading(true);
+        setError(false)
         const { data } = await axios.get(
           `${api}/api/orders/${fingerprint}/find/${id}/${userInfo?.user?._id}`
         );
@@ -43,9 +44,13 @@ function Order() {
         setLoading(false);
       } catch (error) {
         setLoading(false);
+        setError(true);
+        console.log("error: " , error)
       }
+    
     };
-    handleOrder();
+  }
+  handleOrder();
   }, [id, userInfo.user?._id, fingerprint]);
 
   const takeOrder = async (businessId, orderId) => {
@@ -95,12 +100,11 @@ function Order() {
     ));
   };
 
-
   useEffect(() => {
-    if (!userInfo?.user?._id ) {
+    if (!userInfo?.user?._id) {
       navigate('/signin');
     }
-  }, [userInfo?.user?._id,  navigate]);
+  }, [userInfo?.user?._id, navigate]);
 
   const refundAndCancelOrder = async (orderId) => {
     try {
@@ -124,12 +128,12 @@ function Order() {
   return (
     <div>
       {loading ? (
-        <div style={{ height: '70vh' , maxHeight:"70vh", overflow:'hidden'}}>
+        <div style={{ height: '70vh', maxHeight: '70vh', overflow: 'hidden' }}>
           <LoadingBox />
         </div>
-      ) : ( 
+      ) : error  === true ? <Error/> : (
         <>
-          {data?.products?.length > 0 ? (
+          {data?.products?.length > 0 && (
             <>
               <Container className="my-3">
                 <div>
@@ -401,9 +405,7 @@ function Order() {
                 </div>
               </Container>
             </>
-          ) : (
-            <div>{!loading && <Error />}</div>
-          )}
+          ) }
         </>
       )}
     </div>

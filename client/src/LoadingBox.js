@@ -15,7 +15,7 @@ function LoadingBox() {
         }}
       >
         <Masonry gutter="10px">
-          {Array.from(new Array(18)).map((index) => (
+          {Array.from(new Array(18)).map((_, index) => (
             <div key={index} >
               <div>
                 <Skeleton variant="rectangular" height={200} />
