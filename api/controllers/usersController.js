@@ -765,14 +765,7 @@ export const getStores = async (req, res) => {
       timeOpen: store.timeOpen,
     }));
 
-    console.log('query', query);
 
-    console.log(stores);
-
-    // if (rating) {
-
-    //   filteredStores.sort({ rating: -1 });
-    // }
 
     const startIndex = (page - 1) * parseInt(pageSize);
     const endIndex = startIndex + parseInt(pageSize);
@@ -826,7 +819,6 @@ export const vendorRegistration = async (req, res) => {
 
     res.status(200).json({ message: 'successfully registered' });
   } catch (error) {
-    console.log(error);
     res.status(500).json(error.message);
   }
 };
