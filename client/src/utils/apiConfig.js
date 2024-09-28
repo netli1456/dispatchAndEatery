@@ -1,7 +1,12 @@
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { useEffect, useState } from 'react';
 
-export const api = 'https://mbiteapi.onrender.com';
+// export const api = 'https://mbiteapi.onrender.com';
+
+const isCapacitor = window.Capacitor !== undefined; // Check if running in Capacitor
+export const api = isCapacitor
+  ? 'https://mbiteapi.onrender.com'
+  : 'http://mbitee.onrender.com';
 
 // export const api = 'http://localhost:5000';
 
