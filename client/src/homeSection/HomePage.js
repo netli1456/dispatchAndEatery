@@ -107,7 +107,7 @@ function HomePage(props) {
           }}
         >
           <Masonry gutter="10px">
-            {(loading ? Array.from(new Array(6)) : data).map((item, index) => (
+            {(loading ? Array.from(new Array(6)) : data)?.map((item, index) => (
               <Link
                 to={`/kitchen/${item?.userId}`}
                 key={`${index}`}
