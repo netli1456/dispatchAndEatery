@@ -28,7 +28,7 @@ app.use(
     origin: [
       'http://localhost:3000',
       'capacitor://localhost', 
-      'https://mbiteapi.onrender.com' 
+      'https://mbitee.onrender.com' 
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
