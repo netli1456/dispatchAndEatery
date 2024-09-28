@@ -27,6 +27,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
+      'https://localhost',
       'capacitor://localhost', 
       'https://mbitee.onrender.com' 
     ],
