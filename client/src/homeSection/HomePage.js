@@ -17,10 +17,7 @@ import CategoryLayout from './CategoryLayout';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { toast } from 'react-toastify';
 import { clearCount } from '../redux/userSlice';
-import Button from 'react-bootstrap/esm/Button';
 import { clearLocation } from '../redux/searchSlice';
-import VendorRegistration from '../component/VendorRegistration';
-
 
 function HomePage(props) {
   const [data, setData] = useState([]);
@@ -33,8 +30,6 @@ function HomePage(props) {
   const [loading, setLoading] = useState(false);
   const { userInfo } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [vendorRegistrationOpen, setVendorRegistrationOpen] = useState(false);
-
 
   const location = useLocation();
 
@@ -181,13 +176,12 @@ function HomePage(props) {
       </div>
       <div style={{ marginTop: '120px' }}></div>
       <div className="my-5">
-        <LetsDoItTogether setVendorRegistrationOpen={setVendorRegistrationOpen}/>
+        <LetsDoItTogether />
       </div>
 
       <div className=" p-2">
         <Footer />
       </div>
-    
     </div>
   );
 }

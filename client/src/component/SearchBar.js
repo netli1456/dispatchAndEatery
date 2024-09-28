@@ -3,14 +3,14 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {  useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearLocation } from '../redux/searchSlice';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 function SearchBar(props) {
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState('')
   const location = useLocation();
   const dispatch = useDispatch();
 

@@ -4,7 +4,6 @@ import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import AddIcon from '@mui/icons-material/Add';
-import NavSearch from '../navSection/NavSearch';
 import Container from 'react-bootstrap/Container';
 
 import CartCard from './CartCard';

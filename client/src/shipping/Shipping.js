@@ -16,7 +16,6 @@ function Shipping({ setShipOpen }) {
   const [street, setStreet] = useState(shipping?.street || '');
   const [state, setState] = useState(shipping?.state || '');
   const [phoneNumber, setPhoneNumber] = useState(shipping?.phoneNumber || '');
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -33,17 +32,7 @@ function Shipping({ setShipOpen }) {
     }
   };
 
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 1200);
-    };
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-
-    return () => {
-      window.removeEventListener('resize', checkScreenSize);
-    };
-  }, []);
+  
 
   return (
     <div className="mt-">

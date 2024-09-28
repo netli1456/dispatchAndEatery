@@ -34,14 +34,12 @@ app.use(
   })
 );
 
-
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
 app.use('/api/reviews', reviewRouter);
 app.use('/api/orders', OrderRouter);
 app.use('/api/payment', flutterRouter);
 app.use('/api/transactions/:fingerprint', authMiddleware, transactionRouter);
-
 
 const port = process.env.PORT;
 mongoose
