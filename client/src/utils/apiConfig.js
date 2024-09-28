@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 const isCapacitor = window.Capacitor !== undefined; // Check if running in Capacitor
 export const api = isCapacitor
   ? 'https://mbiteapi.onrender.com'
-  : 'http://mbitee.onrender.com';
+  : 'https://mbitee.onrender.com';
 
 // export const api = 'http://localhost:5000';
 
