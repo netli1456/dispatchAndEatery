@@ -21,6 +21,7 @@ import EmailOtpForPassword from './signIn/EmailOtpForPassword';
 import ChangePassword from './signIn/ChangePassword';
 import Error from './utils/Error';
 import VendorRegistration from './component/VendorRegistration';
+import PayTest from './component/PayTest';
 
 function App() {
   const { isOpen, toggle } = useOpen();
@@ -91,6 +92,7 @@ function App() {
             element={<ChangePassword />}
           />
           <Route path="*" element={<Error />} />
+          <Route path="pay" element={<PayTest />} />
         </Routes>
       </div>
     </BrowserRouter>

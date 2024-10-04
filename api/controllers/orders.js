@@ -1,6 +1,7 @@
 import Order from '../models/Order.js';
 import TransactionHistory from '../models/TransactionHistory.js';
 import User from '../models/userModel.js';
+import axios from 'axios';
 
 export const CreateOrder = async (req, res) => {
   try {
@@ -14,7 +15,7 @@ export const CreateOrder = async (req, res) => {
 
     const orderedItems = req.body.orderedItems;
     if (customer._id.toString() !== businessId) {
-      if (customer.balance >= req.body.total) {
+      // if (customer.balance >= req.body.total) {
         if (orderedItems) {
           const singleItem = orderedItems.map((item) => {
             return {
@@ -52,9 +53,9 @@ export const CreateOrder = async (req, res) => {
           const ordered = await order.save();
 
           if (ordered.total) {
-            customer.balance = customer.balance - order.total;
+            // customer.balance = customer.balance - order.total;
             business.balance = business.balance + order.total;
-            await customer.save();
+            // await customer.save();
             await business.save();
           } else {
             return res.status({ message: 'something went wrong' });
@@ -70,9 +71,9 @@ export const CreateOrder = async (req, res) => {
           await transactionHistory.save();
           return res.status(200).json({ _id: order._id });
         }
-      } else {
-        return res.status(404).json({ message: 'Insufficient funds' });
-      }
+      // } else {
+      //   return res.status(404).json({ message: 'Insufficient funds' });
+      // }
     } else {
       return res
         .status(403)
@@ -80,6 +81,50 @@ export const CreateOrder = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const verifyPayment = async (req, res) => {
+  const { reference } = req.body;
+  try {
+    const { data } = await axios.get(
+      `https://api.paystack.co/transaction/verify/${reference}`,
+      {
+        headers: {
+          Authorization: `Bearer sk_test_93ff512391edb83ec12dd6039672ae779da50506`,
+        },
+      }
+    );
+
+    if (data.status === true) {
+      return res.status(200).json({ success: true });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Payment failed' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+export const updatePayment = async (req, res) => {
+  try {
+    const { reference, orderId } = req.body;
+    const order = await Order.findById(orderId.toString());
+
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (order.isPaid === true)
+      return res.status(404).json({ message: 'order is already paid' });
+    order.isPaid = true;
+    order.isPaidAt = Date.now();
+    order.reference = reference;
+    const updatedorder = await order.save();
+    res
+      .status(200)
+      .json({ isPaid: updatedorder.isPaid, isPaidAt: updatedorder.isPaidAt });
+  } catch (error) {
+    res.status(404).json({ message: error.message });
   }
 };
 
@@ -93,7 +138,7 @@ export const orderedItems = async (req, res) => {
 
     switch (query) {
       case 'pending':
-        searchConditions.isPaid = false;
+        searchConditions.isPaid = true;
         searchConditions.isCancelled = false;
         break;
       case 'delivered':
@@ -133,6 +178,7 @@ export const orderedItems = async (req, res) => {
             _id: item._id,
             isDelivered: item.isDelivered,
             isPaid: item.isPaid,
+            isPaidAt: item.isPaidAt,
             isDispatched: item.isDispatched,
             isRefunded: item.isRefunded,
             isCancelled: item.isCancelled,

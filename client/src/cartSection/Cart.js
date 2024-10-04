@@ -18,6 +18,7 @@ import { clearCart } from '../redux/cartSlice';
 import { api, useFingerprint } from '../utils/apiConfig';
 import Recommended from '../recommended/Recommended';
 import Spinners from '../utils/Spinner';
+import PayButton from '../component/PayButton';
 
 function Cart() {
   const { cartItems } = useSelector((state) => state.cart);
@@ -34,13 +35,13 @@ function Cart() {
   const navigate = useNavigate();
   const [order, setOrder] = useState({});
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const product=cartItems[0]
+  const product = cartItems[0];
   const fingerprint = useFingerprint();
 
   const handleOrder = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       if (userInfo?.user?._id) {
         const { data } = await axios.post(
@@ -56,49 +57,45 @@ function Cart() {
         setOrder(data);
         dispatch(clearCart());
         toast.success('order completed successfully');
-        setLoading(false)
+        setLoading(false);
       } else {
         navigate('/signin');
       }
     } catch (error) {
       if (
         error.response.data.message === 'sorry! you can not buy from yourself'
-     
       ) {
         toast.error(error.response.data.message, {
           autoClose: false,
           theme: 'colored',
-          toastId:"unique-toast-id",
+          toastId: 'unique-toast-id',
         });
-      
       } else if (error.response.data.message === 'Insufficient funds') {
         toast.error(error.response.data.message, {
           autoClose: false,
           theme: 'colored',
-          toastId:"unique-toast-id",
-
+          toastId: 'unique-toast-id',
         });
       } else if (error.response.data.message === 'something went wrong') {
         toast.error(error.response.data.message, {
           autoClose: false,
           theme: 'colored',
-          toastId:"unique-toast-id",
-
+          toastId: 'unique-toast-id',
         });
-       
       } else {
-        toast.error('please fill the shipping address',error.response.data.message, {
-          autoClose: false,
-          theme: 'colored',
-          toastId:"unique-toast-id",
-
-        });
+        toast.error(
+          'please fill the shipping address',
+          error.response.data.message,
+          {
+            autoClose: false,
+            theme: 'colored',
+            toastId: 'unique-toast-id',
+          }
+        );
       }
-      setLoading(false)
+      setLoading(false);
     }
   };
-
-  console.log(cartItems)
 
   useEffect(() => {
     if (order._id) {
@@ -116,23 +113,21 @@ function Cart() {
     }
   }, [shipOpen]);
 
-
- 
-
   return (
     <div>
-      
       <Row className="m-3 ">
         <Card>
           <Card.Body>
-            {cartItems.length === 0 ? (
+            {cartItems?.length === 0 ? (
               <div
                 className="d-flex justify-content-center align-items-center "
                 style={{ height: '200px' }}
               >
                 <h3>
                   Cart is empty{' '}
-                  <Link to="/search" style={{fontSize:"16px"}}>Click here to see available kitchens</Link>
+                  <Link to="/search" style={{ fontSize: '16px' }}>
+                    Click here to see available kitchens
+                  </Link>
                 </h3>
               </div>
             ) : (
@@ -146,7 +141,7 @@ function Cart() {
                 <div className="d-flex flex-column  gap-1">
                   <div>
                     <strong className="border-bottom border-grey">
-                      Total: {`N${total.toFixed(2)}`}
+                      Total: {`N${total?.toFixed(2)}`}
                     </strong>
                   </div>
                   <div
@@ -184,15 +179,15 @@ function Cart() {
           </Card.Body>
         </Card>
       </Row>
-      {cartItems.length > 0 && (
+      {cartItems?.length > 0 && (
         <Container>
           <Row>
             <Col md={6}>
-              <div >
+              <div>
                 <CartCard />
               </div>
             </Col>
-            <Col md={6} >
+            <Col md={6}>
               <div style={{ width: '80%', margin: 'auto' }}>
                 <Card className="border-">
                   <Card.Body>
@@ -229,21 +224,37 @@ function Cart() {
                         >
                           Total Amount :{`N${total.toFixed(2)}`}
                         </Button>{' '}
-                        <div className="d-grid" style={{ position: 'relative' }}>
+                        <div
+                          className="d-grid"
+                          style={{ position: 'relative' }}
+                        >
                           <Button
                             style={{ width: '100%' }}
-                            variant="success"
+                            variant={!userInfo?.user?._id || !shipping?.name ? 'success' : 'light'}
                             className=" border-bottom border-grey fs-5  fw-bold"
                             onClick={handleOrder}
                           >
-                            CheckOut({cartItems?.length})
+                            {!userInfo?.user?._id || !shipping.name ?  (
+                              'Pay Now'
+                            ) : (
+                              <PayButton                                 
+                                amount={total}
+                                email={'freshout1456@gmail.com'}
+                              />
+                            )}
                           </Button>{' '}
                           {loading && (
-                    <div style={{ position: 'absolute', top: 2, left: '45%' }}>
-                      {' '}
-                      <Spinners />
-                    </div>
-                  )}
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: 2,
+                                left: '45%',
+                              }}
+                            >
+                              {' '}
+                              <Spinners />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -254,8 +265,8 @@ function Cart() {
           </Row>
         </Container>
       )}
-      <div className='mb-3'>
-        <Recommended product={product}/>
+      <div className="mb-3">
+        <Recommended product={product} />
       </div>
       <Footer />
       {shipOpen && (

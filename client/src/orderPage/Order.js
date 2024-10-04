@@ -17,6 +17,8 @@ import { api, useFingerprint } from '../utils/apiConfig';
 import { Box, Skeleton } from '@mui/material';
 import Error from '../utils/Error';
 import LoadingBox from '../LoadingBox';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import PayButton from '../component/PayButton';
 
 function Order() {
   const params = useParams();
@@ -27,30 +29,29 @@ function Order() {
   const [cancelWarning, setCancelWarning] = useState(false);
   const [loading, setLoading] = useState('page' || false);
   const [error, setError] = useState(false);
+  const { shipping } = useSelector((state) => state.shippingAddress);
 
   const navigate = useNavigate();
   const fingerprint = useFingerprint();
 
   useEffect(() => {
     const handleOrder = async () => {
-     if(fingerprint){
-      try {
-        setLoading(true);
-        setError(false)
-        const { data } = await axios.get(
-          `${api}/api/orders/${fingerprint}/find/${id}/${userInfo?.user?._id}`
-        );
-        setData(data);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        setError(true);
-        console.log("error: " , error)
+      if (fingerprint) {
+        try {
+          setLoading(true);
+          setError(false);
+          const { data } = await axios.get(
+            `${api}/api/orders/${fingerprint}/find/${id}/${userInfo?.user?._id}`
+          );
+          setData(data);
+          setLoading(false);
+        } catch (error) {
+          setLoading(false);
+          setError(true);
+        }
       }
-    
     };
-  }
-  handleOrder();
+    handleOrder();
   }, [id, userInfo.user?._id, fingerprint]);
 
   const takeOrder = async (businessId, orderId) => {
@@ -125,13 +126,53 @@ function Order() {
     }
   };
 
+  useEffect(() => {
+    if (
+      shipping?.reference !== '' &&
+      shipping?.reference !== undefined &&
+      shipping?.reference !== null
+    ) {
+      verifyPayment(shipping?.reference);
+    }
+  }, [shipping]);
+
+
+  const orderId = data?.details?._id;
+
+  const verifyPayment = async (reference) => {
+    try {
+      const { data } = await axios.post(`${api}/api/pay`, { reference });
+
+      if (data.success === true) {
+        const { data } = await axios.post(`${api}/api/orders/pay`, {
+          reference,
+          orderId: orderId,
+        });
+        setData((prevData) => ({
+          ...prevData,
+          details: {
+            ...prevData.details,
+            isPaid: data?.isPaid,
+            isPaidAt: data?.isPaidAt,
+          },
+        }));
+      } else {
+        toast.error('error making payment');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       {loading ? (
         <div style={{ height: '70vh', maxHeight: '70vh', overflow: 'hidden' }}>
           <LoadingBox />
         </div>
-      ) : error  === true ? <Error/> : (
+      ) : error === true ? (
+        <Error />
+      ) : (
         <>
           {data?.products?.length > 0 && (
             <>
@@ -253,6 +294,34 @@ function Order() {
                                   {userInfo?.user?._id !==
                                     data?.details?.buyerId && (
                                     <div className="font1bg my-3 p-2 border border-rounded">
+                                      
+
+                                      {data?.details?.isPaid && (
+                                        <div className="d-flex justify-content-between">
+                                          {' '}
+                                          <span className="d-flex text-white fw-bold fs-4 align-items-center gap-1">
+                                            <DoneAllIcon />
+                                            Paid
+                                          </span>{' '}
+                                          <div className="d-flex flex-column mt-2 text-white">
+                                            <span>
+                                              Date{' '}
+                                              {data?.details?.isPaidAt.slice(
+                                                0,
+                                                10
+                                              )}
+                                            </span>
+                                            <span>
+                                              Time{' '}
+                                              {data?.details?.isPaidAt.slice(
+                                                11,
+                                                16
+                                              )}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      )}
+
                                       <span>
                                         Note: this order has been comfirmed, for
                                         futher enquiries or help, kindly report
@@ -276,6 +345,43 @@ function Order() {
                           data?.details?.isCancelled === false &&
                           data?.details?.buyerId === userInfo?.user?._id && (
                             <div className="font1bg my-3 p-2 border border-rounded">
+                              <div
+                                className={
+                                  data?.details?.isPaid
+                                    ? 'p-2 rounded  paid '
+                                    : 'p-2 rounded  bg-danger '
+                                }
+                              >
+                                {data?.details?.isPaid ? (
+                                  <div className="d-flex justify-content-between">
+                                    {' '}
+                                    <span className="d-flex text-white fw-bold fs-4 align-items-center gap-1">
+                                      <DoneAllIcon />
+                                      Paid
+                                    </span>{' '}
+                                    <div className="d-flex flex-column mt-2 text-white">
+                                      <span>
+                                        Date{' '}
+                                        {data?.details?.isPaidAt.slice(0, 10)}
+                                      </span>
+                                      <span>
+                                        Time{' '}
+                                        {data?.details?.isPaidAt.slice(11, 16)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="d-flex align-items-center justify-content-center gap-3 text-white ">
+                                    <span className=" fw-bold fs-5">
+                                      Not paid
+                                    </span>
+                                    <PayButton
+                                      amount={data?.details?.total}
+                                      email={'freshout1456@gmail.com'}
+                                    />
+                                  </div>
+                                )}
+                              </div>
                               <span>
                                 Note: this order has been comfirmed, for futher
                                 enquiries or help, kindly report below{' '}
@@ -321,7 +427,7 @@ function Order() {
                         variant="success"
                         className="bg-success text-white fw-bold"
                       >
-                        See All Orders
+                        All Orders
                       </Button>
                     </div>
                   </div>
@@ -405,7 +511,7 @@ function Order() {
                 </div>
               </Container>
             </>
-          ) }
+          )}
         </>
       )}
     </div>

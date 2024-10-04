@@ -5,6 +5,8 @@ import {
   orderedItems,
   refundAndCancelOrder,
   takeOrder,
+  updatePayment,
+  
 } from '../controllers/orders.js';
 import { authMiddleware } from '../middleWareAuth/midleware.js';
 
@@ -31,6 +33,7 @@ OrderRouter.put(
   authMiddleware,
   refundAndCancelOrder
 );
-// OrderRouter.get('/test/:id', searchOrder)
+
+OrderRouter.post('/pay', updatePayment )
 
 export default OrderRouter;

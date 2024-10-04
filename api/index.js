@@ -11,6 +11,7 @@ import transactionRouter from './routes/transactionHistory.js';
 import cookieParser from 'cookie-parser';
 import { authMiddleware } from './middleWareAuth/midleware.js';
 import userRouter from './routes/userRoutes.js';
+import paymentRouter from './routes/payStack.js';
 
 dotenv.config();
 const app = express();
@@ -39,6 +40,7 @@ app.use(
   })
 );
 
+app.use('/api/pay', paymentRouter);
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
 app.use('/api/reviews', reviewRouter);
