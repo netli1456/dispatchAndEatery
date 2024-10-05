@@ -90,7 +90,6 @@ function Order() {
     };
   }, []);
 
-  console.log('transation', data?.details);
 
   const items = (data) => {
     return data?.products?.map((item, index) => (
@@ -363,7 +362,7 @@ function Order() {
                         {data?.details &&
                           data?.details?.isCancelled === false &&
                           data?.details?.buyerId === userInfo?.user?._id && (
-                            <div style={{width: isSmallScreen ? '70vw' : ''}} className="font1bg my-3 p-2 border border-rounded">
+                            <div  className="font1bg my-3 p-2 border border-rounded">
                               
                               <div
                                 className={
