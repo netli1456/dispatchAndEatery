@@ -230,18 +230,12 @@ function Cart() {
                         >
                           <Button
                             style={{ width: '100%' }}
-                            variant={!userInfo?.user?._id || !shipping?.name ? 'success' : 'light'}
+                            variant= 'success' 
                             className=" border-bottom border-grey fs-5  fw-bold"
                             onClick={handleOrder}
                           >
-                            {!userInfo?.user?._id || !shipping.name ?  (
-                              'Pay Now'
-                            ) : (
-                              <PayButton                                 
-                                amount={total}
-                                email={'freshout1456@gmail.com'}
-                              />
-                            )}
+                           
+                             Check out
                           </Button>{' '}
                           {loading && (
                             <div

@@ -30,6 +30,8 @@ function Order() {
   const [loading, setLoading] = useState('page' || false);
   const [error, setError] = useState(false);
   const { shipping } = useSelector((state) => state.shippingAddress);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
 
   const navigate = useNavigate();
   const fingerprint = useFingerprint();
@@ -87,6 +89,8 @@ function Order() {
       window.removeEventListener('resize', smallSize);
     };
   }, []);
+
+  console.log('transation', data?.details);
 
   const items = (data) => {
     return data?.products?.map((item, index) => (
@@ -164,6 +168,18 @@ function Order() {
     }
   };
 
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 1200);
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => {
+      window.removeEventListener('resize', checkScreenSize);
+    };
+  }, []);
+
   return (
     <div>
       {loading ? (
@@ -226,10 +242,12 @@ function Order() {
                             </div>
                           </div>
                         </div>
+                        
                         {data?.products &&
                           data?.products[0]?.businessId !== false &&
                           data?.details?.isCancelled === false && (
-                            <>
+                            <> 
+                           
                               {data?.details && !data?.details?.isTaken ? (
                                 <div>
                                   {!cancelWarning && (
@@ -291,6 +309,7 @@ function Order() {
                                 </div>
                               ) : (
                                 <>
+                                
                                   {userInfo?.user?._id !==
                                     data?.details?.buyerId && (
                                     <div className="font1bg my-3 p-2 border border-rounded">
@@ -344,7 +363,8 @@ function Order() {
                         {data?.details &&
                           data?.details?.isCancelled === false &&
                           data?.details?.buyerId === userInfo?.user?._id && (
-                            <div className="font1bg my-3 p-2 border border-rounded">
+                            <div style={{width: isSmallScreen ? '70vw' : ''}} className="font1bg my-3 p-2 border border-rounded">
+                              
                               <div
                                 className={
                                   data?.details?.isPaid
@@ -377,7 +397,10 @@ function Order() {
                                     </span>
                                     <PayButton
                                       amount={data?.details?.total}
-                                      email={'freshout1456@gmail.com'}
+                                      email={data?.details?.email}
+                                      order_id={data?.details?._id}
+                                      name={data?.details?.buyerName}
+                                      phone={data?.details?.phoneNumber}
                                     />
                                   </div>
                                 )}

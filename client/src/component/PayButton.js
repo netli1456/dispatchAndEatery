@@ -6,17 +6,18 @@ import './test.css';
 import { shippingSuccess } from '../redux/shippingSlice';
 import { toast } from 'react-toastify';
 
-const PayButton = ({ amount, email }) => {
+const PayButton = ({ amount, email, order_id, name, phone }) => {
   const publicKey = 'pk_test_47269eaf48549862609f2d6e6640579716bedee3';
   const dispatch = useDispatch();
 
   const componentProps = {
     email,
     amount: amount * 100,
-
+   
     metadata: {
-      name: 'no name man',
-      phone: 'no name phonenumber',
+      name: name,
+      phone: phone,
+      order_id:order_id,
     },
     publicKey,
     text: 'Pay Now',

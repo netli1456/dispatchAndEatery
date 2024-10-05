@@ -16,61 +16,59 @@ export const CreateOrder = async (req, res) => {
     const orderedItems = req.body.orderedItems;
     if (customer._id.toString() !== businessId) {
       // if (customer.balance >= req.body.total) {
-        if (orderedItems) {
-          const singleItem = orderedItems.map((item) => {
-            return {
-              name: item.name,
-              price: item.price,
-              imgs: item.imgs.map((img) => img.url),
-              quantity: item.quantity,
-              productId: item._id,
-              category: item.category,
-            };
-          });
+      if (orderedItems) {
+        const singleItem = orderedItems.map((item) => {
+          return {
+            name: item.name,
+            price: item.price,
+            imgs: item.imgs.map((img) => img.url),
+            quantity: item.quantity,
+            productId: item._id,
+            category: item.category,
+          };
+        });
 
-          const business = await User.findById(businessId);
-          if (business) {
-            for (const item of orderedItems) {
-              if (item.userId !== business._id.toString()) {
-                return res
-                  .status(401)
-                  .json({ message: 'something went wrong' });
-              }
+        const business = await User.findById(businessId);
+        if (business) {
+          for (const item of orderedItems) {
+            if (item.userId !== business._id.toString()) {
+              return res.status(401).json({ message: 'something went wrong' });
             }
           }
-
-          const order = new Order({
-            ...req.body,
-            orderedItems: singleItem,
-            shippingAddress: shippingAddress,
-            buyerId: customer._id,
-            businessId: business._id,
-            total: req.body.total,
-            subtotal: req.body.subtotal,
-            shippingFee: req.body.shippingFee,
-          });
-
-          const ordered = await order.save();
-
-          if (ordered.total) {
-            // customer.balance = customer.balance - order.total;
-            business.balance = business.balance + order.total;
-            // await customer.save();
-            await business.save();
-          } else {
-            return res.status({ message: 'something went wrong' });
-          }
-
-          const transactionHistory = new TransactionHistory({
-            businessId: business._id,
-            buyerId: customer._id,
-            amount: order.total,
-            status: true,
-            orderId: order._id,
-          });
-          await transactionHistory.save();
-          return res.status(200).json({ _id: order._id });
         }
+
+        const order = new Order({
+          ...req.body,
+          orderedItems: singleItem,
+          shippingAddress: shippingAddress,
+          buyerId: customer._id,
+          businessId: business._id,
+          total: req.body.total,
+          subtotal: req.body.subtotal,
+          shippingFee: req.body.shippingFee,
+        });
+
+        const ordered = await order.save();
+
+        if (ordered.total) {
+          // customer.balance = customer.balance - order.total;
+          business.balance = business.balance + order.total;
+          // await customer.save();
+          await business.save();
+        } else {
+          return res.status({ message: 'something went wrong' });
+        }
+
+        const transactionHistory = new TransactionHistory({
+          businessId: business._id,
+          buyerId: customer._id,
+          amount: order.total,
+          status: true,
+          orderId: order._id,
+        });
+        await transactionHistory.save();
+        return res.status(200).json({ _id: order._id });
+      }
       // } else {
       //   return res.status(404).json({ message: 'Insufficient funds' });
       // }
@@ -96,6 +94,7 @@ export const verifyPayment = async (req, res) => {
       }
     );
 
+
     if (data.status === true) {
       return res.status(200).json({ success: true });
     } else {
@@ -116,10 +115,12 @@ export const updatePayment = async (req, res) => {
     if (!order) return res.status(404).json({ message: 'Order not found' });
     if (order.isPaid === true)
       return res.status(404).json({ message: 'order is already paid' });
+
     order.isPaid = true;
     order.isPaidAt = Date.now();
     order.reference = reference;
     const updatedorder = await order.save();
+
     res
       .status(200)
       .json({ isPaid: updatedorder.isPaid, isPaidAt: updatedorder.isPaidAt });
@@ -267,11 +268,13 @@ export const getSingleOrder = async (req, res) => {
       }
       const others = {
         ...other,
-        buyerName: buyer.surname + buyer.firstname,
+        buyerName: `${buyer.surname}  ${buyer.firstname}`,
         businessName: business.businessName,
         businessId: business._id,
         buyerId: buyer._id,
         rating: business.rating,
+        email: !order.isPaid && buyer.email,
+        phoneNumber: !order.isPaid && order.shippingAddress.phoneNumber,
       };
 
       res.status(200).json({ products: orders, details: others });

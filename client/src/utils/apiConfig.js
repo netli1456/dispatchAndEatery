@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 // export const api = 'https://mbiteapi.onrender.com';
 
-const isCapacitor = window.Capacitor !== undefined; // Check if running in Capacitor
+const isCapacitor = window.Capacitor !== undefined; 
 export const api = isCapacitor
   ? 'https://mbiteapi.onrender.com'
   : 'https://mbiteapi.onrender.com';
