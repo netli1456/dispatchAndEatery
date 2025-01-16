@@ -30,7 +30,7 @@ app.use(
       'http://localhost:3000',
       'https://localhost',
       'capacitor://localhost', 
-      'https://mbitee.onrender.com' 
+      'https://bite-5irv.onrender.com' 
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
