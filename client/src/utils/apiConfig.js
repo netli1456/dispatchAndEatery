@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 
 const isCapacitor = window.Capacitor !== undefined; 
 export const api = isCapacitor
-  ? 'https://mbiteapi.onrender.com'
-  : 'https://mbiteapi.onrender.com';
+  ? 'https://biteapi.onrender.com'
+  : 'https://biteapi.onrender.com';
 
 // export const api = 'http://localhost:5000';
 
